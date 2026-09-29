@@ -18,6 +18,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <style>
+        /* ============================================================
+           GLOBAL RESET & TOKENS
+           ============================================================ */
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
@@ -30,7 +33,7 @@
             --icm-red: #dc3545;
             --gold-accent: #f6b83b;
             --mob-primary: #22c55e;
-            --mob-header-h: 74px;
+            --mob-header-h: 74px;   /* reserved space for the fixed mobile header */
         }
 
         html, body {
@@ -56,6 +59,9 @@
         img { max-width: 100%; height: auto; }
         .hidden { display: none !important; }
 
+        /* ============================================================
+           GOLDLINE WORDMARK
+           ============================================================ */
         .goldline-logo {
             font-family: 'Inter', sans-serif;
             font-weight: 700;
@@ -70,6 +76,9 @@
         .goldline-logo span { color: var(--gold-accent); }
         .goldline-logo.lg { font-size: 1.55rem; }
 
+        /* ============================================================
+           DESKTOP LANDING (unchanged)
+           ============================================================ */
         .topbar {
             background: var(--icm-darker);
             color: #cbd5e0;
@@ -151,6 +160,13 @@
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255,255,255,0.85%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
         }
 
+        /* ============================================================
+           MOBILE HEADER — FIXED so it stays visible while scrolling
+           Layout:
+              Left:  [GoldlineMarkets]
+              Right: [🌐 EN ▾]  [≡]
+                     [Client Login]
+           ============================================================ */
         .mobile-header { display: none; }
 
         @media (max-width: 991px) {
@@ -159,6 +175,7 @@
                 display: none !important;
             }
 
+            /* FIXED header — stays at the top on scroll */
             .mobile-header {
                 display: block;
                 background: #000;
@@ -170,6 +187,8 @@
                 z-index: 1050;
                 box-shadow: 0 2px 10px rgba(0,0,0,0.35);
             }
+            /* Reserve space at the top of the page so the fixed header
+               doesn't overlap the hero when the page first loads. */
             #landing-view {
                 padding-top: var(--mob-header-h);
             }
@@ -251,6 +270,7 @@
             }
         }
 
+        /* Mobile nav drawer */
         .mobile-nav-drawer {
             display: none;
             position: fixed;
@@ -314,6 +334,9 @@
             margin-top: 10px;
         }
 
+        /* ============================================================
+           BUTTONS
+           ============================================================ */
         .btn-primary-icm {
             background: var(--icm-primary);
             border: none;
@@ -348,6 +371,9 @@
         }
         .btn-outline-light-icm:hover { background: #fff; color: var(--icm-dark); border-color: #fff; }
 
+        /* ============================================================
+           HERO
+           ============================================================ */
         .hero-carousel .carousel-item {
             height: clamp(380px, 60vh, 600px);
             position: relative;
@@ -396,6 +422,7 @@
         .slide-2 { background-image: url('ai.jpg'); background-size: cover; background-position: center center; background-repeat: no-repeat; }
         .slide-3 { background-image: url('wall.jpg'); background-size: cover; background-position: center center; background-repeat: no-repeat; }
 
+        /* Mobile hero */
         @media (max-width: 767px) {
             .hero-carousel .carousel-item {
                 height: calc(88vh - var(--mob-header-h));
@@ -443,12 +470,16 @@
             }
             .hero-carousel .carousel-indicators { margin-bottom: 24px; }
 
+            /* Hide the prev/next arrows on mobile */
             .hero-carousel .carousel-control-prev,
             .hero-carousel .carousel-control-next {
                 display: none !important;
             }
         }
 
+        /* ============================================================
+           RAW SPREAD
+           ============================================================ */
         .raw-spread-sec {
             background: linear-gradient(135deg, var(--icm-dark) 0%, #12314f 100%);
             padding: 70px 0;
@@ -515,6 +546,9 @@
             .f-btn a { display: block; text-align: center; }
         }
 
+        /* ============================================================
+           GENERIC SECTIONS
+           ============================================================ */
         .section-pad { padding: 70px 0; }
         .section-pad-sm { padding: 50px 0; }
         .bg-light-icm { background: var(--icm-light); }
@@ -612,6 +646,9 @@
         @media (max-width: 991px) { .reg-steps { grid-template-columns: repeat(2, 1fr); gap: 16px; } }
         @media (max-width: 575px) { .reg-steps { grid-template-columns: 1fr; gap: 14px; } }
 
+        /* ============================================================
+           FOOTER
+           ============================================================ */
         .site-footer {
             background: var(--icm-darker); color: #8899a8;
             padding: 60px 0 0; font-size: 0.85rem;
@@ -640,6 +677,9 @@
         .footer-disclaimer b { color: #a0b0c0; }
         @media (max-width: 767px) { .site-footer { padding: 44px 0 0; } }
 
+        /* ============================================================
+           FIXED BOTTOM STRIP (desktop)
+           ============================================================ */
         .fixed-bottom-strip {
             position: fixed; bottom: 0; left: 0; right: 0;
             background: #fff; border-top: 1px solid #e8eef4;
@@ -652,6 +692,7 @@
             .fixed-bottom-strip .btn { font-size: 0.8rem; padding: 9px 14px; }
         }
 
+        /* Mobile floating support bubble */
         .mobile-support-bubble { display: none; }
         @media (max-width: 991px) {
             .fixed-bottom-strip { display: none !important; }
@@ -678,6 +719,9 @@
         #landing-view { padding-bottom: 80px; }
         @media (max-width: 575px) { #landing-view { padding-bottom: 90px; } }
 
+        /* ============================================================
+           AUTH PAGE (unchanged)
+           ============================================================ */
         .auth-page {
             background-color: #070b19;
             color: #ffffff;
@@ -974,7 +1018,6 @@
             transition: opacity 0.2s;
         }
         .auth-page .btn-submit:hover { opacity: 0.9; }
-        .auth-page .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
 
         .auth-page .card-footer-text {
             text-align: center;
@@ -1010,6 +1053,7 @@
             gap: 6px;
         }
 
+        /* Protect Font Awesome */
         .auth-page i.fa,
         .auth-page i.fas,
         .auth-page i.far,
@@ -1052,8 +1096,12 @@
 </head>
 <body>
 
+<!-- ============================================================
+     LANDING PAGE
+     ============================================================ -->
 <div id="landing-view">
 
+    <!-- TOP BAR (desktop only) -->
     <div class="topbar">
         <div class="container">
             <div class="d-flex justify-content-between align-items-center">
@@ -1068,6 +1116,7 @@
         </div>
     </div>
 
+    <!-- MAIN NAVBAR (desktop only) -->
     <nav class="navbar navbar-expand-lg main-navbar sticky-top">
         <div class="container">
             <a class="navbar-brand" data-action="home">
@@ -1148,6 +1197,7 @@
         </div>
     </nav>
 
+    <!-- MOBILE HEADER — FIXED, stays visible while scrolling -->
     <div class="mobile-header">
         <div class="mobile-header__row">
             <a class="mobile-header__logo" data-action="home">
@@ -1165,6 +1215,7 @@
         </div>
     </div>
 
+    <!-- MOBILE NAV DRAWER -->
     <div class="mobile-nav-drawer" id="mobileNavDrawer">
         <div class="mobile-nav-drawer__panel">
             <button type="button" class="mobile-nav-drawer__close" id="mobileNavClose" aria-label="Close menu">&times;</button>
@@ -1199,6 +1250,7 @@
         </div>
     </div>
 
+    <!-- HERO CAROUSEL -->
     <div id="heroCarousel" class="carousel slide hero-carousel" data-bs-ride="carousel">
         <div class="carousel-indicators">
             <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-label="Slide 1"></button>
@@ -1238,6 +1290,7 @@
         </button>
     </div>
 
+    <!-- RAW SPREAD + QUOTES -->
     <section class="raw-spread-sec">
         <div class="container">
             <div class="row g-4 g-lg-5 align-items-center">
@@ -1357,6 +1410,7 @@
         </div>
     </section>
 
+    <!-- STRENGTH -->
     <section class="strength-sec">
         <div class="container text-center">
             <h2 class="mb-4">Give your automated trading system the edge</h2>
@@ -1364,6 +1418,7 @@
         </div>
     </section>
 
+    <!-- PLATFORMS + MARKETS -->
     <section class="section-pad">
         <div class="container">
             <div class="row g-4">
@@ -1420,6 +1475,7 @@
         </div>
     </section>
 
+    <!-- FUNDING -->
     <section class="section-pad bg-light-icm">
         <div class="container">
             <div class="feature-card">
@@ -1447,6 +1503,7 @@
         </div>
     </section>
 
+    <!-- REGISTRATION STEPS -->
     <section class="section-pad">
         <div class="container">
             <h2 class="text-center mb-2">Open an account in 4 simple steps</h2>
@@ -1479,6 +1536,7 @@
         </div>
     </section>
 
+    <!-- FINAL CTA -->
     <section class="section-pad">
         <div class="container text-center">
             <h2 class="mb-2">Instant account opening &amp; funding</h2>
@@ -1490,6 +1548,7 @@
         </div>
     </section>
 
+    <!-- FOOTER -->
     <footer class="site-footer">
         <div class="container">
             <div class="row g-4 justify-content-center">
@@ -1513,6 +1572,7 @@
         </div>
     </footer>
 
+    <!-- FIXED BOTTOM STRIP (desktop only — hidden on mobile) -->
     <div class="fixed-bottom-strip">
         <div class="container">
             <div class="d-flex justify-content-end gap-2 flex-wrap">
@@ -1522,6 +1582,7 @@
         </div>
     </div>
 
+    <!-- MOBILE FLOATING SUPPORT BUBBLE (mobile only) -->
     <a href="#" class="mobile-support-bubble" aria-label="Support">
         <i class="fa-solid fa-comment-dots"></i>
     </a>
@@ -1529,6 +1590,9 @@
 </div><!-- /#landing-view -->
 
 
+<!-- ============================================================
+     AUTH PAGE
+     ============================================================ -->
 <div id="auth-view" class="auth-page hidden">
 
     <div class="chat-widget">
@@ -1861,34 +1925,6 @@
                 </form>
             </div>
 
-            <div id="email-verification-view" class="hidden">
-
-                <div class="card-header-flex">
-                    <div>
-                        <div class="card-top-title">Email Verification</div>
-                        <h2>Verify Your Email</h2>
-                    </div>
-
-                    <div class="shield-icon">
-                        <i class="fa-solid fa-envelope-circle-check"></i>
-                    </div>
-                </div>
-
-                <p class="card-desc">
-                    We have sent a verification link to your email address.
-                    Please check your inbox and click the link to verify your account.
-                </p>
-
-                <div class="auth-message" id="verificationMessage"></div>
-
-                <div class="card-footer-text" style="margin-top: 20px;">
-                    <a id="resendVerificationBtn" style="color: #3b82f6; font-weight: 500; cursor: pointer;">Resend verification email</a>
-                    <br>
-                    <a id="verificationBackToLogin" style="margin-top: 8px; display: inline-block;">Back to Sign In</a>
-                </div>
-
-            </div><!-- /#email-verification-view -->
-
             <div id="login-view">
                 <div class="card-header-flex">
                     <div>
@@ -1942,6 +1978,9 @@
 </div><!-- /#auth-view -->
 
 
+<!-- ============================================================
+     JS — Bootstrap + Firebase + Login Bootstrap
+     ============================================================ -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script type="module">
@@ -1956,15 +1995,14 @@
         }
     });
 
+    // Firebase
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-analytics.js";
     import {
         getAuth,
         createUserWithEmailAndPassword,
         signInWithEmailAndPassword,
-        sendPasswordResetEmail,
-        sendEmailVerification,
-        signOut
+        sendPasswordResetEmail
     } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
     import {
         getDatabase,
@@ -1990,14 +2028,11 @@
     const auth = getAuth(app);
     const db = getDatabase(app);
 
+    // View Router
     const landingView = document.getElementById('landing-view');
     const authView = document.getElementById('auth-view');
     const loginView = document.getElementById('login-view');
     const registerView = document.getElementById('register-view');
-    const emailVerificationView = document.getElementById('email-verification-view');
-    const verificationMessage = document.getElementById('verificationMessage');
-    const resendVerificationBtn = document.getElementById('resendVerificationBtn');
-    const verificationBackToLogin = document.getElementById('verificationBackToLogin');
     const toLoginBtn = document.getElementById('to-login');
     const toRegisterBtn = document.getElementById('to-register');
     const loginMessage = document.getElementById('loginMessage');
@@ -2005,6 +2040,7 @@
     const referralInput = document.getElementById('reg-referral');
     const referralHint = document.getElementById('referralHint');
 
+    // Mobile drawer
     const mobileHamburger = document.getElementById('mobileHamburger');
     const mobileNavDrawer = document.getElementById('mobileNavDrawer');
     const mobileNavClose = document.getElementById('mobileNavClose');
@@ -2021,20 +2057,6 @@
         });
     }
 
-    function safePushState(url) {
-        if (window.location.protocol === 'file:') return;
-        try {
-            history.pushState(null, '', url);
-        } catch (err) {
-            console.warn('[Router] pushState skipped:', err);
-        }
-    }
-
-    const VERIFICATION_ACTION_CODE_SETTINGS = {
-        url: 'https://goldlinemarkets.com/login',
-        handleCodeInApp: false
-    };
-
     let referralFromUrl = false;
 
     function showLandingView() {
@@ -2048,13 +2070,11 @@
     function showLoginView() {
         showAuthView();
         registerView.classList.add('hidden');
-        emailVerificationView.classList.add('hidden');
         loginView.classList.remove('hidden');
     }
     function showRegisterView(referralCode = null) {
         showAuthView();
         loginView.classList.add('hidden');
-        emailVerificationView.classList.add('hidden');
         registerView.classList.remove('hidden');
 
         if (referralCode) {
@@ -2071,12 +2091,6 @@
             referralHint.textContent = 'Optional. Add a code if someone invited you.';
         }
     }
-    function showEmailVerificationView() {
-        showAuthView();
-        registerView.classList.add('hidden');
-        loginView.classList.add('hidden');
-        emailVerificationView.classList.remove('hidden');
-    }
 
     function initializeViewFromUrl() {
         const params = new URLSearchParams(window.location.search);
@@ -2085,13 +2099,13 @@
 
         if (referralCode) {
             showRegisterView(referralCode);
-            if (path !== '/register') safePushState(`/register?ref=${referralCode}`);
+            if (path !== '/register') history.replaceState(null, '', `/register?ref=${referralCode}`);
             return;
         }
         if (path === '/register') { showRegisterView(null); return; }
         if (path === '/login' || path === '/auth') {
             showLoginView();
-            if (path !== '/login') safePushState('/login');
+            if (path !== '/login') history.replaceState(null, '', '/login');
             return;
         }
         showLandingView();
@@ -2105,18 +2119,18 @@
                 if (mobileNavDrawer) mobileNavDrawer.classList.remove('open');
                 const params = new URLSearchParams(window.location.search);
                 const ref = params.get('ref');
-                if (ref) { showRegisterView(ref); safePushState(`/register?ref=${ref}`); }
-                else { showRegisterView(null); safePushState('/register'); }
+                if (ref) { showRegisterView(ref); history.pushState(null, '', `/register?ref=${ref}`); }
+                else { showRegisterView(null); history.pushState(null, '', '/register'); }
             } else if (action === 'login') {
                 e.preventDefault();
                 if (mobileNavDrawer) mobileNavDrawer.classList.remove('open');
                 showLoginView();
-                safePushState('/login');
+                history.pushState(null, '', '/login');
             } else if (action === 'home') {
                 e.preventDefault();
                 if (mobileNavDrawer) mobileNavDrawer.classList.remove('open');
                 showLandingView();
-                safePushState('/');
+                history.pushState(null, '', '/');
             }
         });
     });
@@ -2124,20 +2138,21 @@
     toLoginBtn.addEventListener('click', (e) => {
         e.preventDefault();
         showLoginView();
-        safePushState('/login');
+        history.pushState(null, '', '/login');
     });
 
     toRegisterBtn.addEventListener('click', (e) => {
         e.preventDefault();
         const params = new URLSearchParams(window.location.search);
         const ref = params.get('ref');
-        if (ref) { showRegisterView(ref); safePushState(`/register?ref=${ref}`); }
-        else { showRegisterView(null); safePushState('/register'); }
+        if (ref) { showRegisterView(ref); history.pushState(null, '', `/register?ref=${ref}`); }
+        else { showRegisterView(null); history.pushState(null, '', '/register'); }
     });
 
     window.addEventListener('popstate', () => initializeViewFromUrl());
     initializeViewFromUrl();
 
+    // Phone helper
     const countrySelect = document.getElementById('countryCodeSelect');
     const phoneHelperText = document.getElementById('phoneHelperText');
 
@@ -2307,25 +2322,9 @@
                 createdAt: new Date().toISOString()
             });
 
-            try {
-                await sendEmailVerification(user, VERIFICATION_ACTION_CODE_SETTINGS);
-                verificationMessage.textContent = "Verification email sent to " + email + ". Please check your inbox and spam folder.";
-                verificationMessage.className = "auth-message success";
-            } catch (verr) {
-                console.warn('[Verification] sendEmailVerification failed:', verr);
-                verificationMessage.textContent = "Account created, but the verification email could not be sent. Use Resend below.";
-                verificationMessage.className = "auth-message error";
-            }
-
-            regMessage.textContent = "";
-            regMessage.className = "auth-message";
-
-            showEmailVerificationView();
-            safePushState('/verify-email');
-
-            regSubmitBtn.disabled = false;
-            regSubmitBtn.style.opacity = '1';
-
+            regMessage.textContent = "Registration successful! Redirecting to dashboard...";
+            regMessage.className = "auth-message success";
+            setTimeout(() => { window.location.href = "/dashboard"; }, 800);
         } catch (error) {
             let errorText = error.message;
             if (error.code === 'auth/email-already-in-use') errorText = "Email already registered.";
@@ -2341,6 +2340,9 @@
     const loginForm = document.getElementById('login-form');
     const loginSubmitBtn = document.getElementById('loginSubmitBtn');
 
+    // ================================================================
+    // LOGIN BOOTSTRAP — critical account data read before dashboard
+    // ================================================================
     async function bootstrapCriticalData(uid) {
         const BOOTSTRAP_TIMEOUT_MS = 2500;
         const bootstrapData = {
@@ -2402,6 +2404,7 @@
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
 
+            // Read critical bootstrap data before redirecting
             await bootstrapCriticalData(user.uid);
 
             loginMessage.textContent = "Login Successful";
@@ -2421,64 +2424,10 @@
         }
     });
 
-    // (checkVerificationBtn handler removed — that button no longer exists)
-
-    let resendCooldown = false;
-    resendVerificationBtn.addEventListener('click', async (e) => {
-        e.preventDefault();
-        if (resendCooldown) return;
-
-        const currentUser = auth.currentUser;
-        if (!currentUser) {
-            verificationMessage.textContent = "No active session. Please sign in again.";
-            verificationMessage.className = "auth-message error";
-            return;
-        }
-
-        resendCooldown = true;
-        resendVerificationBtn.style.opacity = '0.5';
-        resendVerificationBtn.style.pointerEvents = 'none';
-
-        try {
-            await sendEmailVerification(currentUser, VERIFICATION_ACTION_CODE_SETTINGS);
-            verificationMessage.textContent = "Verification email resent. Check your inbox and spam folder.";
-            verificationMessage.className = "auth-message success";
-        } catch (err) {
-            console.warn('[Verification] resend failed:', err);
-            let errorText = "Could not resend verification email. Please try again later.";
-            if (err.code === 'auth/too-many-requests') {
-                errorText = "Too many requests. Please wait a moment before trying again.";
-            }
-            verificationMessage.textContent = errorText;
-            verificationMessage.className = "auth-message error";
-        } finally {
-            setTimeout(() => {
-                resendCooldown = false;
-                resendVerificationBtn.style.opacity = '1';
-                resendVerificationBtn.style.pointerEvents = 'auto';
-            }, 5000);
-        }
-    });
-
-    verificationBackToLogin.addEventListener('click', async (e) => {
-        e.preventDefault();
-        try {
-            await signOut(auth);
-        } catch (err) {
-            console.warn('[Verification] signOut failed:', err);
-        }
-        verificationMessage.textContent = "";
-        verificationMessage.className = "auth-message";
-        showLoginView();
-        safePushState('/login');
-    });
-
     console.log('[Bootstrap] Login bootstrap system initialized.');
     console.log('[Bootstrap] Only users/{uid}/balances and users/{uid}/referralEarnings are read at login.');
     console.log('[Bootstrap] Bootstrap is stored in sessionStorage under goldline_bootstrap_{uid}.');
     console.log('[Bootstrap] Dashboard will use bootstrap for temporary display only; Firebase remains authoritative.');
-    console.log('[Verification] New-user email verification enabled. Existing users are unaffected.');
-    console.log('[Verification] Both initial send and Resend use VERIFICATION_ACTION_CODE_SETTINGS → https://goldlinemarkets.com/login');
 
 </script>
 
