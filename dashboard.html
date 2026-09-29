@@ -11966,33 +11966,11 @@
     }
 
     function showOrderPreview(side) {
-      if (!isVerified) {
-        const notif = document.createElement('div');
-        notif.className = 'trade-notification';
-        notif.style.borderColor = 'var(--btn-danger)';
-        notif.innerHTML = `
-                    <div style="font-weight: 600;">Verification Required</div>
-                    <div style="font-size:13px; color:var(--text-secondary);">Please verify your identity to start trading</div>
-                `;
-        document.body.appendChild(notif);
-        setTimeout(() => {
-          if (notif.parentNode) {
-            notif.style.opacity = '0';
-            notif.style.transition = 'opacity 0.5s ease';
-            setTimeout(() => {
-              if (notif.parentNode) notif.remove();
-            }, 500);
-          }
-        }, 3000);
-        closeAllPanels();
-        if (panels.identityVerification) {
-          panels.identityVerification.classList.remove('hidden');
-          if (buttons.account) buttons.account.classList.add('active');
-          if (chartOverlay) chartOverlay.classList.add('active');
-          savePanelState('identityVerification', ['identityVerification']);
-        }
-        return;
-      }
+      // ============================================================
+      // VERIFICATION GATE REMOVED - Trade opening is no longer blocked
+      // by identity verification. Authentication is still required
+      // (the user must be logged in), but isVerified is not checked.
+      // ============================================================
 
       const amountText = document.getElementById('tradeAmount').value;
       const amount = parseFloat(amountText.replace('$', '').trim()) || 5;
@@ -12651,33 +12629,12 @@
       startRobotBtn.addEventListener('click', function(e) {
         e.stopPropagation();
 
-        if (!isVerified) {
-          const notif = document.createElement('div');
-          notif.className = 'trade-notification';
-          notif.style.borderColor = 'var(--btn-danger)';
-          notif.innerHTML = `
-            <div style="font-weight: 600;">Verification Required</div>
-            <div style="font-size:13px; color:var(--text-secondary);">Please verify your identity to start trading</div>
-          `;
-          document.body.appendChild(notif);
-          setTimeout(() => {
-            if (notif.parentNode) {
-              notif.style.opacity = '0';
-              notif.style.transition = 'opacity 0.5s ease';
-              setTimeout(() => {
-                if (notif.parentNode) notif.remove();
-              }, 500);
-            }
-          }, 3000);
-          closeAllPanels();
-          if (panels.identityVerification) {
-            panels.identityVerification.classList.remove('hidden');
-            if (buttons.account) buttons.account.classList.add('active');
-            if (chartOverlay) chartOverlay.classList.add('active');
-            savePanelState('identityVerification', ['identityVerification']);
-          }
-          return;
-        }
+        // ============================================================
+        // VERIFICATION GATE REMOVED - Starting the robot is no longer
+        // blocked by identity verification. Authentication is still
+        // required (the user must be logged in), but isVerified is
+        // not checked here.
+        // ============================================================
 
         if (botRunning) {
           stopBotAndPersist('user_stop');
@@ -13271,6 +13228,10 @@
     console.log('[Stake Persistence Removed] The /stakes node is never recreated after cleanup.');
     console.log('[Stake Persistence Removed] Internal trading engine still uses trade.amount for all calculations.');
     console.log('[Stake Persistence Removed] Trade History remains fully functional with amount/stake stripped.');
+    console.log('[Verification Gate Removed] Manual trade opening (Buy/Sell) no longer requires identity verification.');
+    console.log('[Verification Gate Removed] Robot start (Start trading) no longer requires identity verification.');
+    console.log('[Verification Gate Removed] Authentication is still required. All other validation remains intact.');
+    console.log('[Verification Gate Removed] Verification UI, submission, and Firebase reads are fully preserved.');
 
     const MARKET_SENTINEL_STATE = '__market_sentinel__';
     let exitConfirmTimer = null;
