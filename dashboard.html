@@ -1,0 +1,4246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>GoldlineMarkets Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+  <style>
+    /* RESET & BASE STYLING */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      user-select: none;
+    }
+
+    /* LIGHT MODE VARIABLES - DEFAULT */
+    :root {
+      --bg-primary: #f0f2f5;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-input: #f0f2f5;
+      --bg-hover: #e8eaed;
+      --bg-active: #e3f0ff;
+      --border-color: #d0d4dc;
+      --border-light: #d0d4dc;
+      --text-primary: #1a1a2e;
+      --text-secondary: #5a5a7a;
+      --text-white: #1a1a2e;
+      --shadow-color: rgba(0, 0, 0, 0.1);
+      --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      --signal-card-bg: #2563eb;
+      --signal-text: #ffffff;
+      --btn-primary: #2563eb;
+      --btn-primary-hover: #1d4ed8;
+      --btn-danger: #dc2626;
+      --btn-danger-hover: #b91c1c;
+      --success: #16a34a;
+      --warning: #f59e0b;
+      --chart-bg: #ffffff;
+      --topbar-bg: #ffffff;
+      --sidebar-bg: #ffffff;
+      --drawer-bg: #ffffff;
+      --panel-shadow: 8px 0 24px rgba(0, 0, 0, 0.1);
+      --notification-bg: #ffffff;
+    }
+
+    /* DARK MODE CLASS */
+    .dark-mode {
+      --bg-primary: #0b0e14;
+      --bg-secondary: #12151f;
+      --bg-card: #171b28;
+      --bg-input: #191c28;
+      --bg-hover: #1d2232;
+      --bg-active: #212b40;
+      --border-color: #1e2332;
+      --border-light: #23293c;
+      --text-primary: #d1d4dc;
+      --text-secondary: #787b86;
+      --text-white: #ffffff;
+      --shadow-color: rgba(0, 0, 0, 0.4);
+      --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      --signal-card-bg: #3b82f6;
+      --signal-text: #ffffff;
+      --btn-primary: #0084ff;
+      --btn-primary-hover: #0070da;
+      --btn-danger: #f23645;
+      --btn-danger-hover: #d12a38;
+      --success: #00b067;
+      --warning: #ff9800;
+      --chart-bg: #131722;
+      --topbar-bg: #151822;
+      --sidebar-bg: #12151f;
+      --drawer-bg: #12151f;
+      --panel-shadow: 8px 0 24px rgba(0, 0, 0, 0.4);
+      --notification-bg: #171b28;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    .app-container {
+      display: flex;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      position: relative;
+      overflow: hidden;
+    }
+    .left-sidebar {
+      width: 68px;
+      background-color: var(--sidebar-bg);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px 0;
+      flex-shrink: 0;
+      z-index: 90;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+    .brand-logo {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      overflow: hidden;
+      background: transparent;
+    }
+    .brand-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+    .nav-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      width: 100%;
+      align-items: center;
+    }
+    .nav-item {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      font-size: 11px;
+      transition: color 0.2s;
+      width: 100%;
+    }
+    .nav-item i {
+      font-size: 18px;
+    }
+    .nav-item:hover,
+    .nav-item.active {
+      color: var(--btn-primary);
+    }
+    .gear-item {
+      margin-top: auto;
+    }
+    .workspace-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: row;
+      height: 100%;
+      overflow: hidden;
+      min-width: 0;
+    }
+    .main-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      height: 100%;
+      min-width: 0;
+      overflow: hidden;
+    }
+    .top-bar {
+      height: 52px;
+      background-color: var(--topbar-bg);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      flex-shrink: 0;
+      gap: 12px;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+    .top-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .top-bar-center {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .top-bar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .acc-pill {
+      background-color: var(--bg-card);
+      border-radius: 50px;
+      padding: 6px 16px 6px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      border: 1px solid var(--border-light);
+    }
+    .acc-pill:hover {
+      background-color: var(--bg-hover);
+    }
+    .acc-info {
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+    }
+    .acc-title {
+      font-size: 10px;
+      color: var(--text-secondary);
+    }
+    .acc-val {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-white);
+    }
+
+    .top-asset-selector {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 50px;
+      padding: 6px 16px 6px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s, border-color 0.2s;
+      height: 38px;
+      min-height: 38px;
+    }
+    .top-asset-selector:hover {
+      background-color: var(--bg-hover);
+      border-color: var(--btn-primary);
+    }
+    .top-asset-selector .asset-symbol {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-white);
+      white-space: nowrap;
+    }
+    .top-asset-selector .asset-status {
+      display: none !important;
+    }
+    .top-asset-selector i {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-left: 2px;
+    }
+
+    .chart-container-box {
+      flex: 1;
+      width: 100%;
+      height: calc(100% - 52px);
+      position: relative;
+      background-color: var(--chart-bg);
+      transition: background-color 0.3s ease;
+    }
+    #tradingview_widget {
+      width: 100%;
+      height: 100%;
+    }
+    .chart-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 80;
+      background: transparent;
+      display: none;
+    }
+    .chart-overlay.active {
+      display: block;
+    }
+    .right-sidebar {
+      width: 210px;
+      background-color: var(--bg-secondary);
+      border-left: 1px solid var(--border-color);
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      flex-shrink: 0;
+      overflow-y: auto;
+      z-index: 90;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+    .side-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-white);
+      margin-bottom: 4px;
+    }
+    .trade-input-group {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+    .input-label {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+    .input-control-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .input-val {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-white);
+      background: transparent;
+      border: none;
+      outline: none;
+      width: 60px;
+      padding: 2px 0;
+      cursor: text;
+    }
+    .input-val:focus {
+      background: var(--bg-input);
+      border-radius: 4px;
+      padding-left: 4px;
+    }
+    .step-btn {
+      background: var(--bg-input);
+      border: 1px solid var(--border-light);
+      color: var(--text-white);
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 12px;
+      transition: background-color 0.2s;
+    }
+    .step-btn:hover {
+      background-color: var(--bg-hover);
+    }
+    .desktop-trade-btns {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .btn-sell-lg {
+      height: 48px;
+      background-color: var(--btn-danger);
+      border: none;
+      border-radius: 50px;
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      cursor: pointer;
+    }
+    .btn-buy-lg {
+      height: 48px;
+      background-color: var(--btn-primary);
+      border: none;
+      border-radius: 50px;
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      cursor: pointer;
+    }
+    .btn-sell-lg .live-sell-price,
+    .btn-buy-lg .live-buy-price {
+      font-size: 13px;
+      font-weight: 700;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 2px 10px;
+      border-radius: 20px;
+    }
+    .mobile-trade-controls {
+      display: none;
+    }
+    .left-drawer-panel {
+      position: absolute;
+      top: 0;
+      left: 68px;
+      width: 320px;
+      height: 100%;
+      background-color: var(--drawer-bg);
+      border-right: 1px solid var(--border-color);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--panel-shadow);
+      transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .drawer-scroll-body {
+      flex: 1;
+      padding: 20px 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    .drawer-fixed-footer {
+      padding: 12px 16px 16px 16px;
+      background-color: var(--drawer-bg);
+      border-top: 1px solid var(--border-color);
+      flex-shrink: 0;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+    .right-drawer-panel {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 380px;
+      height: 100%;
+      background-color: var(--drawer-bg);
+      border-left: 1px solid var(--border-color);
+      z-index: 100;
+      padding: 20px 18px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: -8px 0 24px var(--shadow-color);
+      overflow-y: auto;
+      transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .drawer-top-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .drawer-top-header h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-white);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .acc-selection-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .acc-select-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 60px;
+      padding: 12px 20px 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      transition: background-color 0.2s, border-color 0.2s;
+    }
+    .acc-select-card:hover {
+      background-color: var(--bg-hover);
+    }
+    .acc-select-card.active {
+      background-color: var(--bg-active);
+      border-color: var(--btn-primary);
+    }
+    .acc-select-card.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    .acc-card-icon {
+      color: var(--text-secondary);
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      overflow: hidden;
+      background: var(--bg-hover);
+    }
+    .acc-card-icon img {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .acc-select-card.active .acc-card-icon {
+      color: var(--btn-primary);
+      background: var(--bg-active);
+    }
+    .acc-card-details {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .acc-card-type {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .acc-select-card.active .acc-card-type {
+      color: var(--text-white);
+      font-weight: 700;
+    }
+    .acc-card-balance {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-white);
+    }
+
+    /* Progress Steps */
+    .steps-progress-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      margin-bottom: 22px;
+      padding: 0 10px;
+    }
+    .steps-progress-container::before {
+      content: '';
+      position: absolute;
+      top: 15px;
+      left: 30px;
+      right: 30px;
+      height: 2px;
+      background-color: var(--btn-primary);
+      z-index: 1;
+    }
+    .step-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      position: relative;
+      z-index: 2;
+    }
+    .step-circle {
+      width: 30px;
+      height: 30px;
+      background-color: var(--btn-primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .step-circle.inactive {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-light);
+      color: var(--text-secondary);
+    }
+    .step-label-text {
+      font-size: 11px;
+      color: var(--text-secondary);
+      text-align: center;
+      white-space: nowrap;
+    }
+    .feature-cards-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .feature-mini-card {
+      flex: 1;
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 10px 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 8px;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+    .feature-mini-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+    .feature-mini-title {
+      font-size: 10px;
+      color: var(--text-primary);
+      line-height: 1.2;
+      font-weight: 600;
+    }
+    .wallet-graphic-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .wallet-green-box {
+      width: 90px;
+      height: 80px;
+      background: var(--success);
+      border-radius: 16px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 24px rgba(0, 176, 103, 0.3);
+    }
+    .wallet-green-box i {
+      font-size: 38px;
+      color: #ffffff;
+    }
+    .deposit-main-heading {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-white);
+      margin-bottom: 8px;
+    }
+    .deposit-sub-description {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+    .btn-step1-deposit {
+      width: 100%;
+      height: 48px;
+      background-color: var(--btn-primary);
+      border: none;
+      border-radius: 50px;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .btn-step1-deposit:hover {
+      background-color: var(--btn-primary-hover);
+    }
+    .deposit-sub-title {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+    }
+    .deposit-field-group {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 10px 14px;
+      margin-bottom: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .deposit-field-group:hover {
+      background-color: var(--bg-hover);
+    }
+    .deposit-row-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .deposit-item-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-white);
+    }
+    .deposit-item-sub {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    .btn-deposit-submit {
+      width: 100%;
+      height: 48px;
+      background-color: var(--btn-primary);
+      border: none;
+      border-radius: 50px;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 4px;
+      margin-bottom: 12px;
+      transition: background-color 0.2s;
+    }
+    .btn-deposit-submit:hover {
+      background-color: var(--btn-primary-hover);
+    }
+    .btn-start-robot {
+      width: 100%;
+      height: 48px;
+      background-color: var(--btn-primary);
+      border: none;
+      border-radius: 50px;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 132, 255, 0.3);
+      transition: background-color 0.2s;
+    }
+    .btn-start-robot:hover {
+      background-color: var(--btn-primary-hover);
+    }
+    .btn-start-robot.running {
+      background-color: var(--btn-danger);
+      box-shadow: 0 4px 12px rgba(242, 54, 69, 0.3);
+    }
+    .btn-start-robot.running:hover {
+      background-color: var(--btn-danger-hover);
+    }
+    .strategy-list-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .strategy-option-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 16px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      cursor: pointer;
+      transition: background-color 0.2s, border-color 0.2s;
+    }
+    .strategy-option-card:hover {
+      background-color: var(--bg-hover);
+    }
+    .strategy-option-card.active {
+      background-color: var(--bg-active);
+      border-color: var(--btn-primary);
+    }
+    .strategy-option-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--bg-hover);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--btn-primary);
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .strategy-option-card.green-icon .strategy-option-icon {
+      background-color: #152b22;
+      color: var(--success);
+    }
+    .strategy-option-card.red-icon .strategy-option-icon {
+      background-color: #2c1a1d;
+      color: var(--btn-danger);
+    }
+    .strategy-option-details {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .strategy-option-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-white);
+    }
+    .risk-indicator-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+    .risk-indicator-row.low {
+      color: var(--success);
+    }
+    .risk-indicator-row.medium {
+      color: var(--warning);
+    }
+    .risk-indicator-row.high {
+      color: var(--btn-danger);
+    }
+    .strategy-option-balance {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+    .lock-icon-badge {
+      color: var(--text-secondary);
+      font-size: 14px;
+      align-self: center;
+    }
+    .user-profile-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .user-avatar-box {
+      position: relative;
+      width: 44px;
+      height: 44px;
+      background-color: var(--bg-hover);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      font-size: 20px;
+    }
+    .user-avatar-box .avatar-badge {
+      display: none;
+    }
+    .user-details {
+      display: flex;
+      flex-direction: column;
+    }
+    .user-name-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-white);
+    }
+    .user-id-sub {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    .activation-card-widget {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 20px;
+      position: relative;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+    .activation-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .activation-title-sm {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+    .activation-time-pill {
+      background-color: var(--bg-hover);
+      border-radius: 20px;
+      padding: 2px 10px;
+      font-size: 10px;
+      color: var(--text-secondary);
+    }
+    .activation-action-txt {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-white);
+      margin-bottom: 12px;
+    }
+    .activation-progress-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .progress-track {
+      flex: 1;
+      height: 6px;
+      background-color: var(--bg-hover);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      width: 66%;
+      height: 100%;
+      background-color: var(--btn-primary);
+    }
+    .progress-counter {
+      font-size: 11px;
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+    .wallet-icon-float {
+      position: absolute;
+      right: 14px;
+      bottom: 14px;
+      width: 38px;
+      height: 38px;
+      background-color: var(--btn-primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-size: 16px;
+    }
+    .balance-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .balance-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    .balance-amount {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-white);
+    }
+    .account-menu-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .account-menu-item {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--text-white);
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .account-menu-item:hover {
+      background-color: var(--bg-hover);
+    }
+    .item-left-side {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .item-left-side i {
+      font-size: 14px;
+      color: var(--btn-primary);
+      width: 16px;
+      text-align: center;
+    }
+    .item-right-side {
+      color: var(--text-secondary);
+      font-size: 12px;
+    }
+    .account-menu-item.logout-item .item-left-side {
+      color: var(--btn-danger);
+    }
+    .account-menu-item.logout-item .item-left-side i {
+      color: var(--btn-danger);
+    }
+    .account-menu-item.theme-item .item-left-side i {
+      color: var(--warning);
+    }
+    .theme-toggle-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .theme-toggle-switch {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      background-color: var(--bg-hover);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      border: 1px solid var(--border-light);
+      flex-shrink: 0;
+    }
+    .theme-toggle-switch.active {
+      background-color: var(--btn-primary);
+    }
+    .theme-toggle-switch .toggle-slider {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 18px;
+      height: 18px;
+      background-color: #ffffff;
+      border-radius: 50%;
+      transition: transform 0.3s ease;
+    }
+    .theme-toggle-switch.active .toggle-slider {
+      transform: translateX(20px);
+    }
+    .theme-label {
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+    .profile-info-list {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      margin-top: 10px;
+    }
+    .profile-info-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .profile-info-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    .profile-info-val {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-white);
+    }
+    .support-section-subtitle {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-white);
+      margin-bottom: 6px;
+    }
+    .support-subtext {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.4;
+      margin-bottom: 16px;
+    }
+    .chat-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 16px;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      text-decoration: none;
+    }
+    .chat-card:hover {
+      background-color: var(--bg-hover);
+    }
+    .chat-icon-box {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--btn-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .chat-card-info {
+      display: flex;
+      flex-direction: column;
+    }
+    .chat-card-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-white);
+    }
+    .chat-card-desc {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+    .deals-tab-container {
+      display: flex;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 16px;
+    }
+    .deals-tab {
+      flex: 1;
+      padding: 10px 0;
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      text-align: center;
+    }
+    .deals-tab.active {
+      color: var(--btn-primary);
+      border-bottom-color: var(--btn-primary);
+    }
+    .deals-empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 0;
+      color: var(--text-secondary);
+      gap: 10px;
+      text-align: center;
+    }
+    .deals-empty-state i {
+      font-size: 32px;
+      color: var(--border-light);
+    }
+    .deals-empty-state p {
+      font-size: 12px;
+    }
+    .trade-item-row {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .trade-item-row .trade-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .trade-item-row .trade-bot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .trade-item-row .trade-symbol {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-white);
+    }
+    .trade-item-row .trade-direction {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 2px 10px;
+      border-radius: 12px;
+    }
+    .trade-item-row .trade-direction.buy {
+      color: var(--success);
+      background: rgba(0, 176, 103, 0.15);
+    }
+    .trade-item-row .trade-direction.sell {
+      color: var(--btn-danger);
+      background: rgba(242, 54, 69, 0.15);
+    }
+    .trade-item-row .trade-amount {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-white);
+    }
+    .trade-item-row .trade-profit {
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .trade-item-row .trade-profit.win {
+      color: var(--success);
+    }
+    .trade-item-row .trade-profit.loss {
+      color: var(--btn-danger);
+    }
+    .trade-item-row .trade-time {
+      font-size: 10px;
+      color: var(--text-secondary);
+    }
+    .trade-item-row .trade-remaining {
+      font-size: 11px;
+      color: var(--warning);
+    }
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .close-btn:hover {
+      color: var(--text-white);
+    }
+    .hidden {
+      display: none !important;
+    }
+
+    /* USDT Deposit Styles */
+    .usdt-deposit-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .usdt-deposit-header .usdt-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--bg-hover);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: #f3ba2f;
+      overflow: hidden;
+    }
+    .usdt-deposit-header .usdt-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+    .usdt-deposit-header .usdt-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-white);
+    }
+    .usdt-deposit-header .usdt-sub {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    .usdt-wallet-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 16px;
+      margin: 16px 0;
+    }
+    .usdt-wallet-box .label {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+    }
+    .usdt-wallet-box .address {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-white);
+      word-break: break-all;
+      font-family: monospace;
+    }
+    .usdt-wallet-box .copy-btn {
+      background: var(--bg-input);
+      border: 1px solid var(--border-light);
+      color: var(--text-white);
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      margin-top: 8px;
+    }
+    .usdt-wallet-box .copy-btn:hover {
+      background: var(--bg-hover);
+    }
+    .usdt-wallet-box .copy-btn.copied {
+      background: var(--success);
+    }
+    .usdt-amount-input {
+      background: var(--bg-card);
+      border: 2px solid var(--btn-primary);
+      border-radius: 12px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .usdt-amount-input input {
+      background: transparent;
+      border: none;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-white);
+      width: 100%;
+      outline: none;
+    }
+    .usdt-amount-input span {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-white);
+    }
+    .usdt-hash-input {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 10px 14px;
+      margin-bottom: 12px;
+    }
+    .usdt-hash-input input {
+      background: transparent;
+      border: none;
+      font-size: 14px;
+      color: var(--text-white);
+      width: 100%;
+      outline: none;
+    }
+    .usdt-hash-input input::placeholder {
+      color: var(--text-secondary);
+    }
+    .usdt-note-input {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 10px 14px;
+      margin-bottom: 16px;
+    }
+    .usdt-note-input input {
+      background: transparent;
+      border: none;
+      font-size: 14px;
+      color: var(--text-white);
+      width: 100%;
+      outline: none;
+    }
+    .usdt-note-input input::placeholder {
+      color: var(--text-secondary);
+    }
+    .usdt-deposit-panel .deposit-field-group {
+      cursor: default;
+    }
+    .usdt-deposit-panel .deposit-field-group:hover {
+      background-color: var(--bg-card);
+    }
+    .usdt-deposit-panel .usdt-wallet-box .address-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .usdt-deposit-panel .usdt-wallet-box .address-row .address {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-white);
+      word-break: break-all;
+      font-family: monospace;
+      flex: 1;
+    }
+    .usdt-deposit-panel .usdt-wallet-box .address-row .copy-btn {
+      background: var(--bg-input);
+      border: 1px solid var(--border-light);
+      color: var(--text-white);
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .usdt-deposit-panel .usdt-wallet-box .address-row .copy-btn:hover {
+      background: var(--bg-hover);
+    }
+    .usdt-deposit-panel .usdt-wallet-box .address-row .copy-btn.copied {
+      background: var(--success);
+    }
+
+    /* M-PESA Phone Input */
+    .mpesa-phone-input {
+      background: var(--bg-card);
+      border: 2px solid var(--btn-primary);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+    }
+    .mpesa-phone-input .prefix {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-right: 8px;
+    }
+    .mpesa-phone-input input {
+      background: transparent;
+      border: none;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-white);
+      width: 100%;
+      outline: none;
+      letter-spacing: 1px;
+      font-family: monospace;
+    }
+    .mpesa-phone-input input::placeholder {
+      color: var(--text-secondary);
+      letter-spacing: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    /* M-PESA Method Label */
+    .mpesa-method-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      margin-bottom: 12px;
+    }
+    .mpesa-method-label .icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--bg-hover);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .mpesa-method-label .icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+    .mpesa-method-label .label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-white);
+    }
+    .mpesa-method-label .sub-label {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    /* Parameter Controls */
+    .param-control-group {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+    .param-control-group .param-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+    .param-control-group .param-value {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-white);
+      min-width: 60px;
+      text-align: center;
+      background: transparent;
+      border: none;
+      outline: none;
+      cursor: text;
+      padding: 2px 0;
+    }
+    .param-control-group .param-value:focus {
+      background: var(--bg-input);
+      border-radius: 4px;
+      padding-left: 4px;
+    }
+    .param-control-group .param-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+    .param-control-group .param-step-btn {
+      background: var(--bg-input);
+      border: 1px solid var(--border-light);
+      color: var(--text-white);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+      transition: background-color 0.2s;
+    }
+    .param-control-group .param-step-btn:hover {
+      background-color: var(--bg-hover);
+    }
+    .param-control-group .param-step-btn:active {
+      background-color: var(--bg-active);
+    }
+    .param-divider {
+      border-bottom: 1px solid var(--border-color);
+      margin: 4px 0 8px 0;
+    }
+    .close-btn {
+      display: none !important;
+    }
+
+    /* Execution Account - Single Card */
+    .execution-account-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: background-color 0.2s, border-color 0.2s;
+    }
+    .execution-account-card:hover {
+      background-color: var(--bg-hover);
+      border-color: var(--border-light);
+    }
+    .execution-account-card.disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    .execution-account-card .account-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .execution-account-card .account-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-hover);
+      flex-shrink: 0;
+    }
+    .execution-account-card .account-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+    .execution-account-card .account-info {
+      flex: 1;
+    }
+    .execution-account-card .account-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-white);
+    }
+    .execution-account-card .account-balance {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    .execution-account-card .account-arrow {
+      color: var(--text-secondary);
+      font-size: 12px;
+    }
+
+    /* Copy Trading Panel Styles */
+    .copy-trading-id-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 16px;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+    .copy-trading-id-box .id-label {
+      font-size: 11px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .copy-trading-id-box .id-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--btn-primary);
+      margin: 8px 0;
+      font-family: monospace;
+      letter-spacing: 1px;
+    }
+    .copy-trading-id-box .id-status {
+      font-size: 12px;
+      color: var(--success);
+    }
+    .copy-trading-id-box .id-status.inactive {
+      color: var(--btn-danger);
+    }
+    .copy-btn {
+      background: var(--btn-primary);
+      border: none;
+      color: #ffffff;
+      padding: 8px 24px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: background-color 0.2s;
+      margin-top: 8px;
+    }
+    .copy-btn:hover {
+      background-color: var(--btn-primary-hover);
+    }
+    .copy-btn.copied {
+      background-color: var(--success);
+    }
+
+    /* SIGNAL SEARCH CARD */
+    .signal-search-card {
+      background-color: var(--signal-card-bg);
+      border-radius: 16px;
+      padding: 20px;
+      margin-top: 12px;
+      transition: all 0.3s ease;
+    }
+    .signal-search-card .signal-status {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    .signal-search-card .signal-indicator {
+      position: relative;
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      border-radius: 50%;
+      border: 3px solid rgba(255, 255, 255, 0.2);
+      border-top-color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      transition: border-color 0.3s;
+    }
+    .signal-search-card .signal-indicator img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .signal-search-card .signal-indicator.spinning {
+      animation: spin 1s linear infinite;
+    }
+    .signal-search-card .signal-indicator.spinning img {
+      animation: counter-spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+    @keyframes counter-spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(-360deg);
+      }
+    }
+    .signal-search-card .signal-text-title {
+      font-weight: 600;
+      font-size: 15px;
+      color: var(--signal-text);
+      cursor: pointer;
+      user-select: none;
+      word-break: break-word;
+    }
+    .signal-search-card .signal-text-title:hover {
+      opacity: 0.8;
+    }
+    .signal-search-card .signal-text-sub {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 13px;
+      margin-top: 2px;
+    }
+    .signal-search-card .loading-dots::after {
+      content: '';
+      animation: dots 1.5s steps(4, end) infinite;
+    }
+    @keyframes dots {
+      0% {
+        content: '';
+      }
+      25% {
+        content: '.';
+      }
+      75% {
+        content: '..';
+      }
+      100% {
+        content: '...';
+      }
+    }
+
+    .signal-search-card .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 14px;
+    }
+    .signal-search-card .info-row:last-child {
+      border-bottom: none;
+    }
+    .signal-search-card .info-label {
+      color: rgba(255, 255, 255, 0.8);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .signal-search-card .info-value {
+      font-weight: 600;
+      color: #ffffff;
+    }
+    .signal-search-card .info-row.hidden-row {
+      display: none;
+    }
+
+    .signal-search-card .action-btn-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 4px;
+    }
+    .signal-search-card .action-btn-container.hidden-btn {
+      display: none;
+    }
+    .signal-search-card .btn-robot {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      border: none;
+      padding: 14px;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      width: 100%;
+      max-width: 200px;
+      transition: background-color 0.3s;
+    }
+    .signal-search-card .btn-robot.active {
+      background-color: #ef4444;
+    }
+    .signal-search-card .btn-robot.active:hover {
+      background-color: #dc2626;
+    }
+    .signal-search-card .btn-robot.inactive {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+    .signal-search-card .btn-robot.inactive:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+    }
+    .signal-search-card .btn-robot:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .signal-back-btn {
+      color: var(--btn-danger) !important;
+      cursor: pointer;
+    }
+    .signal-back-btn:hover {
+      color: #ff6b7a !important;
+    }
+
+    /* M-PESA Preset Grid */
+    .mpesa-preset-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .mpesa-preset-btn {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 10px;
+      padding: 12px 8px;
+      color: var(--text-white);
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .mpesa-preset-btn:hover {
+      background-color: var(--bg-hover);
+    }
+    .mpesa-preset-btn.active {
+      border: 2px solid var(--btn-primary);
+      background-color: var(--bg-active);
+    }
+
+    /* Risk Management */
+    .risk-management-grid {
+      display: flex;
+      gap: 12px;
+      margin: 10px 0 10px 0;
+    }
+    .risk-management-grid .risk-card {
+      flex: 1;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 10px 8px 10px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 2px;
+      cursor: pointer;
+      transition: background-color 0.2s, border-color 0.2s;
+    }
+    .risk-management-grid .risk-card:hover {
+      background-color: var(--bg-hover);
+      border-color: var(--border-light);
+    }
+    .risk-management-grid .risk-card .risk-label {
+      font-size: 10px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .risk-management-grid .risk-card .risk-value {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-white);
+      background: transparent;
+      border: none;
+      text-align: center;
+      width: 100%;
+      outline: none;
+      padding: 2px 0;
+    }
+    .risk-management-grid .risk-card .risk-value:focus {
+      background: var(--bg-hover);
+      border-radius: 6px;
+    }
+    .risk-management-grid .risk-card .risk-sub {
+      font-size: 9px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+    .risk-management-grid .risk-card.editing {
+      border-color: var(--btn-primary);
+      background-color: var(--bg-active);
+    }
+
+    /* NOTIFICATION STYLES */
+    .trade-notification {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 9999;
+      background: var(--notification-bg);
+      border: 2px solid var(--btn-primary);
+      border-radius: 40px;
+      padding: 12px 28px;
+      box-shadow: var(--card-shadow);
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-white);
+      animation: slideIn 0.35s ease-out;
+      pointer-events: none;
+      white-space: nowrap;
+      transition: opacity 0.5s ease, background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+      max-width: 95%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .trade-notification .buy-text {
+      color: var(--success);
+    }
+    .trade-notification .sell-text {
+      color: var(--btn-danger);
+    }
+    .trade-notification .closed-text {
+      color: var(--btn-danger);
+    }
+    @keyframes slideIn {
+      0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+
+    /* Order preview notification */
+    .trade-notification.order-preview {
+      top: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 20px;
+      padding: 20px 28px;
+      pointer-events: auto;
+      cursor: default;
+      white-space: normal;
+      max-width: 95%;
+      min-width: 280px;
+      border-width: 2px;
+    }
+    .trade-notification.order-preview .preview-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px 16px;
+      font-size: 13px;
+      text-align: left;
+    }
+    .trade-notification.order-preview .preview-grid .label {
+      color: var(--text-secondary);
+    }
+    .trade-notification.order-preview .preview-grid .value {
+      font-weight: 600;
+      color: var(--text-white);
+    }
+    .trade-notification.order-preview .btn-confirm {
+      border: none;
+      padding: 6px 24px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      color: #ffffff;
+    }
+    .trade-notification.order-preview .btn-cancel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      color: var(--text-secondary);
+      padding: 6px 20px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .trade-notification.order-preview .btn-cancel:hover {
+      background: var(--bg-hover);
+    }
+
+    /* Asset Selection */
+    #assetSelectionPanel .asset-item .asset-status-badge {
+      display: none !important;
+    }
+    #assetSelectionPanel .asset-item .asset-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-white);
+    }
+    #assetSelectionPanel .asset-item {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 10px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: background-color 0.2s, border-color 0.2s;
+    }
+    #assetSelectionPanel .asset-item:hover {
+      background-color: var(--bg-hover);
+      border-color: var(--border-light);
+    }
+    #assetSelectionPanel .asset-item.active {
+      background-color: var(--bg-active);
+      border: 2px solid var(--btn-primary);
+    }
+
+    .usdt-deposit-header .usdt-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    /* File upload status */
+    .file-upload-status {
+      font-size: 12px;
+      color: var(--success);
+      margin-top: 6px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: rgba(0, 176, 103, 0.1);
+      display: none;
+    }
+    .file-upload-status.error {
+      color: var(--btn-danger);
+      background: rgba(242, 54, 69, 0.1);
+    }
+    .file-upload-status.show {
+      display: block !important;
+    }
+
+    /* Verification status badge */
+    .verification-badge {
+      font-size: 10px;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+    .verification-badge.verified {
+      color: var(--success);
+      background: rgba(0, 176, 103, 0.15);
+    }
+    .verification-badge.unverified {
+      color: var(--btn-danger);
+      background: rgba(242, 54, 69, 0.15);
+    }
+    .verification-badge.pending {
+      color: var(--warning);
+      background: rgba(255, 152, 0, 0.15);
+    }
+
+    /* Transaction item styles */
+    .transaction-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .transaction-item .trans-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .transaction-item .trans-bot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .transaction-item .trans-type {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 2px 10px;
+      border-radius: 12px;
+    }
+    .transaction-item .trans-type.deposit {
+      color: var(--success);
+      background: rgba(0, 176, 103, 0.15);
+    }
+    .transaction-item .trans-type.withdrawal {
+      color: var(--btn-danger);
+      background: rgba(242, 54, 69, 0.15);
+    }
+    .transaction-item .trans-type.transfer {
+      color: var(--warning);
+      background: rgba(255, 152, 0, 0.15);
+    }
+    .transaction-item .trans-amount {
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .transaction-item .trans-amount.positive {
+      color: var(--success);
+    }
+    .transaction-item .trans-amount.negative {
+      color: var(--btn-danger);
+    }
+    .transaction-item .trans-status {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
+    .transaction-item .trans-status.completed {
+      color: var(--success);
+      background: rgba(0, 176, 103, 0.1);
+    }
+    .transaction-item .trans-status.pending {
+      color: var(--warning);
+      background: rgba(255, 152, 0, 0.1);
+    }
+    .transaction-item .trans-status.failed {
+      color: var(--btn-danger);
+      background: rgba(242, 54, 69, 0.1);
+    }
+    .transaction-item .trans-status.cancelled {
+      color: var(--text-secondary);
+      background: rgba(120, 123, 134, 0.1);
+    }
+    .transaction-item .trans-time {
+      font-size: 10px;
+      color: var(--text-secondary);
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-white);
+      margin: 12px 0 8px 0;
+      padding-bottom: 4px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .section-title:first-of-type {
+      margin-top: 0;
+    }
+
+    .robot-step-btn:hover {
+      background-color: var(--bg-hover) !important;
+    }
+    .asset-item:hover {
+      background-color: var(--bg-hover) !important;
+    }
+
+    /* =============================================
+       SUPPORT CHAT STYLES (NEW - MINIMAL ADDITION)
+       ============================================= */
+    .support-chat-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 400px;
+    }
+    .support-chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-height: 240px;
+    }
+    .support-msg-row {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+    }
+    .support-msg-row.sent {
+      align-items: flex-end;
+    }
+    .support-msg-row.received {
+      align-items: flex-start;
+    }
+    .support-msg-bubble {
+      max-width: 80%;
+      padding: 8px 12px;
+      border-radius: 14px;
+      font-size: 13px;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+    .support-msg-bubble.sent {
+      background-color: var(--btn-primary);
+      color: #ffffff;
+      border-bottom-right-radius: 4px;
+    }
+    .support-msg-bubble.received {
+      background-color: var(--bg-hover);
+      color: var(--text-white);
+      border-bottom-left-radius: 4px;
+    }
+    .support-msg-time {
+      font-size: 10px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+      padding: 0 4px;
+    }
+    .support-chat-input-row {
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+      padding-top: 10px;
+      border-top: 1px solid var(--border-color);
+      margin-top: 8px;
+    }
+    .support-chat-input {
+      flex: 1;
+      background: var(--bg-input);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 10px 14px;
+      color: var(--text-white);
+      font-size: 13px;
+      outline: none;
+      resize: none;
+      max-height: 100px;
+      min-height: 40px;
+      font-family: inherit;
+    }
+    .support-chat-input:focus {
+      border-color: var(--btn-primary);
+    }
+    .support-chat-send-btn {
+      background: var(--btn-primary);
+      color: #ffffff;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      flex-shrink: 0;
+      transition: background 0.2s;
+    }
+    .support-chat-send-btn:hover {
+      background: var(--btn-primary-hover);
+    }
+    .support-chat-send-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .support-chat-loading {
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 12px;
+      padding: 20px;
+    }
+    .support-msg-deleted {
+      opacity: 0.6;
+      font-style: italic;
+    }
+
+    /* =============================================
+       PROFILE COPY ID BUTTON (NEW - MINIMAL ADDITION)
+       ============================================= */
+    .profile-id-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .profile-copy-id-btn {
+      background: var(--bg-input);
+      border: 1px solid var(--border-light);
+      color: var(--text-white);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      line-height: 1.4;
+    }
+    .profile-copy-id-btn:hover {
+      background: var(--bg-hover);
+    }
+    .profile-copy-id-btn.copied {
+      background: var(--success);
+      border-color: var(--success);
+      color: #ffffff;
+    }
+    .profile-copy-id-btn i {
+      font-size: 10px;
+    }
+
+    /* ==============================================
+       MOBILE RESPONSIVE       ============================================== */
+    @media (max-width: 850px) {
+      .app-container {
+        flex-direction: column;
+        padding-bottom: 56px;
+      }
+      .left-sidebar {
+        order: 3;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 56px;
+        flex-direction: row;
+        border-right: none;
+        border-top: 1px solid var(--border-color);
+        padding: 0 4px;
+        background-color: var(--sidebar-bg);
+        z-index: 200;
+        justify-content: space-around;
+        align-items: center;
+      }
+      .brand-logo,
+      .gear-item {
+        display: none;
+      }
+      .nav-menu {
+        flex-direction: row;
+        justify-content: space-around;
+        width: 100%;
+        gap: 0;
+        padding: 0 4px;
+      }
+      .nav-item {
+        flex: 1;
+        padding: 6px 0;
+        font-size: 10px;
+        gap: 2px;
+        max-width: 70px;
+      }
+      .nav-item i {
+        font-size: 18px;
+      }
+      .nav-item span {
+        font-size: 9px;
+      }
+      .workspace-wrapper {
+        flex-direction: column;
+        order: 1;
+        flex: 1;
+        height: auto;
+      }
+      .top-bar {
+        justify-content: space-between;
+        flex-shrink: 0;
+        height: 48px;
+        padding: 0 12px;
+        flex-wrap: wrap;
+      }
+      .top-bar-left {
+        gap: 6px;
+      }
+      .top-asset-selector {
+        padding: 4px 10px 4px 14px;
+        height: 32px;
+        min-height: 32px;
+      }
+      .top-asset-selector .asset-symbol {
+        font-size: 13px;
+      }
+      .top-asset-selector .asset-status {
+        display: none !important;
+      }
+      .top-asset-selector i {
+        font-size: 10px;
+      }
+      .right-sidebar {
+        order: 2;
+        width: 100%;
+        height: auto;
+        border-left: none;
+        border-top: 1px solid var(--border-color);
+        padding: 10px 12px;
+        flex-shrink: 0;
+      }
+      .desktop-trade-controls {
+        display: none;
+      }
+      .mobile-trade-controls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+      }
+      .mobile-btn-sell {
+        flex: 1;
+        height: 44px;
+        background-color: var(--btn-danger);
+        border: none;
+        border-radius: 50px;
+        color: #ffffff;
+        font-size: 14px;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 14px;
+        cursor: pointer;
+      }
+      .mobile-btn-buy {
+        flex: 1;
+        height: 44px;
+        background-color: var(--btn-primary);
+        border: none;
+        border-radius: 50px;
+        color: #ffffff;
+        font-size: 14px;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 14px;
+        cursor: pointer;
+      }
+      .mobile-btn-sell .live-sell-price,
+      .mobile-btn-buy .live-buy-price {
+        font-size: 12px;
+        font-weight: 700;
+        background: rgba(0, 0, 0, 0.2);
+        padding: 2px 10px;
+        border-radius: 20px;
+      }
+      .left-drawer-panel,
+      .right-drawer-panel {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+        border: none;
+        z-index: 150;
+        padding: 16px 20px 76px 20px;
+        background-color: var(--drawer-bg);
+        box-shadow: none;
+        overflow-y: auto;
+      }
+
+      .left-drawer-panel .drawer-scroll-body,
+      .right-drawer-panel .drawer-scroll-body {
+        padding: 8px 4px 20px 4px;
+        overflow-y: auto;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .left-drawer-panel .drawer-top-header h3,
+      .right-drawer-panel .drawer-top-header h3 {
+        display: flex !important;
+        font-size: 20px;
+        margin-bottom: 12px;
+      }
+
+      .left-drawer-panel .drawer-top-header .fa-chevron-left,
+      .right-drawer-panel .drawer-top-header .fa-chevron-left {
+        font-size: 20px !important;
+        color: var(--text-white);
+        cursor: pointer;
+        padding: 4px 8px 4px 0;
+      }
+
+      .drawer-top-header {
+        padding: 0;
+        margin-bottom: 12px;
+      }
+      .drawer-fixed-footer {
+        padding: 16px 0 20px 0;
+        background-color: var(--drawer-bg);
+        border-top: 1px solid var(--border-color);
+        flex-shrink: 0;
+        margin: 0 -4px;
+        padding: 16px 20px 20px 20px;
+        position: sticky;
+        bottom: 0;
+      }
+
+      .chart-container-box {
+        flex: 1;
+        height: auto;
+        min-height: 300px;
+      }
+      .main-area {
+        height: auto;
+        flex: 1;
+      }
+
+      .account-menu-item {
+        padding: 14px 16px !important;
+        border-radius: 14px !important;
+        font-size: 15px !important;
+        min-height: 52px !important;
+      }
+      .account-menu-item .item-left-side {
+        font-size: 15px !important;
+        gap: 14px !important;
+      }
+      .account-menu-item .item-left-side i {
+        font-size: 18px !important;
+        width: 22px !important;
+      }
+
+      .acc-select-card {
+        padding: 14px 20px 14px 16px !important;
+        border-radius: 60px !important;
+      }
+      .acc-select-card .acc-card-type {
+        font-size: 15px !important;
+      }
+      .acc-select-card .acc-card-balance {
+        font-size: 16px !important;
+      }
+
+      .deposit-field-group {
+        padding: 14px 16px !important;
+        border-radius: 14px !important;
+      }
+      .deposit-item-title {
+        font-size: 15px !important;
+      }
+      .deposit-item-sub {
+        font-size: 13px !important;
+      }
+      .deposit-sub-title {
+        font-size: 14px !important;
+        margin-bottom: 6px !important;
+      }
+
+      .param-control-group {
+        padding: 14px 16px !important;
+        border-radius: 14px !important;
+      }
+      .param-control-group .param-label {
+        font-size: 14px !important;
+      }
+      .param-control-group .param-value {
+        font-size: 17px !important;
+      }
+      .param-control-group .param-step-btn {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 16px !important;
+      }
+
+      .risk-management-grid .risk-card {
+        padding: 14px 12px !important;
+        border-radius: 14px !important;
+      }
+      .risk-management-grid .risk-card .risk-label {
+        font-size: 12px !important;
+      }
+      .risk-management-grid .risk-card .risk-value {
+        font-size: 18px !important;
+      }
+
+      .signal-search-card {
+        padding: 24px !important;
+        border-radius: 18px !important;
+      }
+      .signal-search-card .signal-text-title {
+        font-size: 17px !important;
+      }
+      .signal-search-card .signal-text-sub {
+        font-size: 14px !important;
+      }
+      .signal-search-card .info-row {
+        font-size: 15px !important;
+        padding: 12px 0 !important;
+      }
+
+      .section-title {
+        font-size: 16px !important;
+        padding-bottom: 8px !important;
+        margin: 16px 0 12px 0 !important;
+      }
+      .deals-empty-state p {
+        font-size: 14px !important;
+      }
+
+      .user-name-title {
+        font-size: 18px !important;
+      }
+      .user-id-sub {
+        font-size: 14px !important;
+      }
+      .profile-info-label {
+        font-size: 15px !important;
+      }
+      .profile-info-val {
+        font-size: 16px !important;
+      }
+
+      .btn-deposit-submit,
+      .btn-start-robot,
+      .btn-step1-deposit {
+        height: 56px !important;
+        font-size: 16px !important;
+        border-radius: 50px !important;
+      }
+
+      .support-section-subtitle {
+        font-size: 16px !important;
+      }
+      .support-subtext {
+        font-size: 14px !important;
+      }
+      .chat-card-title {
+        font-size: 15px !important;
+      }
+
+      .trade-item-row {
+        padding: 14px 16px !important;
+        border-radius: 14px !important;
+      }
+      .trade-item-row .trade-symbol {
+        font-size: 15px !important;
+      }
+      .trade-item-row .trade-amount {
+        font-size: 15px !important;
+      }
+      .trade-item-row .trade-profit {
+        font-size: 15px !important;
+      }
+
+      #withdrawalPanel .deposit-sub-title {
+        font-size: 14px !important;
+      }
+      #withdrawalPanel .mpesa-phone-input {
+        padding: 14px 16px !important;
+      }
+      #withdrawalPanel .mpesa-phone-input input {
+        font-size: 18px !important;
+      }
+
+      .usdt-deposit-header .usdt-title {
+        font-size: 20px !important;
+      }
+      .usdt-deposit-header .usdt-sub {
+        font-size: 14px !important;
+      }
+      .usdt-wallet-box .label {
+        font-size: 13px !important;
+      }
+      .usdt-wallet-box .address {
+        font-size: 15px !important;
+      }
+      .usdt-amount-input input {
+        font-size: 20px !important;
+      }
+
+      #transferPanel .deposit-sub-title {
+        font-size: 14px !important;
+      }
+      #transferPanel .transfer-preset-btn {
+        font-size: 14px !important;
+        padding: 8px 16px !important;
+      }
+      #transferPanel #transferAmountInput {
+        font-size: 18px !important;
+      }
+
+      #mpesaStkPanel .deposit-sub-title {
+        font-size: 14px !important;
+      }
+      #mpesaStkPanel .mpesa-phone-input input {
+        font-size: 18px !important;
+      }
+      #mpesaStkPanel #mpesaStkAmount {
+        font-size: 22px !important;
+      }
+
+      .strategy-option-card {
+        padding: 16px 18px !important;
+        border-radius: 16px !important;
+      }
+      .strategy-option-title {
+        font-size: 16px !important;
+      }
+      .strategy-option-balance {
+        font-size: 13px !important;
+      }
+
+      .deposit-main-heading {
+        font-size: 18px !important;
+      }
+      .deposit-sub-description {
+        font-size: 14px !important;
+        line-height: 1.6 !important;
+      }
+      .step-label-text {
+        font-size: 13px !important;
+        white-space: normal !important;
+      }
+
+      #confirmPaymentAmountDisplay {
+        font-size: 28px !important;
+      }
+      #confirmPaymentMethodLabel,
+      #confirmPaymentAccountName,
+      #confirmPaymentCurrencyLabel {
+        font-size: 15px !important;
+      }
+
+      .copy-trading-id-box .id-value {
+        font-size: 28px !important;
+      }
+      .copy-trading-id-box .id-label {
+        font-size: 13px !important;
+      }
+      .copy-trading-id-box .id-status {
+        font-size: 14px !important;
+      }
+
+      #referralPanel .deposit-sub-title {
+        font-size: 14px !important;
+      }
+      #referralLink {
+        font-size: 15px !important;
+      }
+
+      #identityVerificationPanel .deposit-sub-title {
+        font-size: 14px !important;
+      }
+      #identityVerificationPanel .doc-type-btn {
+        font-size: 14px !important;
+        padding: 12px 14px !important;
+      }
+
+      #transactionsPanel .deals-tab {
+        font-size: 15px !important;
+        padding: 12px 0 !important;
+      }
+
+      .acc-pill {
+        padding: 6px 14px 6px 10px !important;
+      }
+      .acc-title {
+        font-size: 10px !important;
+      }
+      .acc-val {
+        font-size: 14px !important;
+      }
+      .balance-label {
+        font-size: 15px !important;
+      }
+      .balance-amount {
+        font-size: 17px !important;
+      }
+
+      #accountLeftPanel .user-profile-header {
+        margin-bottom: 10px !important;
+        gap: 14px !important;
+      }
+      #accountLeftPanel .user-avatar-box {
+        width: 52px !important;
+        height: 52px !important;
+        font-size: 22px !important;
+      }
+
+      .right-drawer-panel .drawer-top-header {
+        margin-bottom: 16px !important;
+      }
+
+      .left-drawer-panel,
+      .right-drawer-panel {
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+      }
+      .drawer-scroll-body {
+        overflow-y: visible !important;
+        padding-bottom: 30px !important;
+      }
+
+      .step-btn,
+      .param-step-btn {
+        min-width: 36px !important;
+        min-height: 36px !important;
+      }
+      .mpesa-preset-btn {
+        padding: 14px 10px !important;
+        font-size: 14px !important;
+      }
+      .withdraw-preset-btn {
+        padding: 10px 18px !important;
+        font-size: 14px !important;
+      }
+      .transfer-preset-btn {
+        padding: 10px 18px !important;
+        font-size: 14px !important;
+      }
+
+      #assetSelectionPanel .asset-item {
+        padding: 14px 16px !important;
+        border-radius: 14px !important;
+      }
+      #assetSelectionPanel .asset-item .asset-name {
+        font-size: 15px !important;
+      }
+
+      #tradeHistoryPanel .deals-tab {
+        font-size: 15px !important;
+        padding: 12px 0 !important;
+      }
+
+      .execution-account-card {
+        padding: 14px 16px !important;
+        border-radius: 14px !important;
+      }
+      .execution-account-card .account-name {
+        font-size: 15px !important;
+      }
+      .execution-account-card .account-balance {
+        font-size: 14px !important;
+      }
+
+      .risk-management-grid .risk-card .risk-sub {
+        font-size: 11px !important;
+      }
+
+      #botStatus {
+        font-size: 14px !important;
+      }
+      #botTradeCount,
+      #botProfitDisplay,
+      #botLossCount,
+      #botCumulativeProfitDisplay {
+        font-size: 14px !important;
+      }
+
+      .theme-toggle-switch {
+        width: 40px !important;
+        height: 22px !important;
+      }
+      .theme-toggle-switch .toggle-slider {
+        width: 16px !important;
+        height: 16px !important;
+      }
+      .theme-toggle-switch.active .toggle-slider {
+        transform: translateX(18px) !important;
+      }
+
+      .support-msg-bubble {
+        max-width: 88%;
+      }
+
+      /* Profile Copy ID mobile */
+      .profile-copy-id-btn {
+        font-size: 12px !important;
+        padding: 6px 16px !important;
+      }
+      .profile-copy-id-btn i {
+        font-size: 12px !important;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .left-sidebar {
+        height: 50px;
+        padding: 0 2px;
+      }
+      .nav-item {
+        font-size: 9px;
+        padding: 4px 0;
+        max-width: 56px;
+      }
+      .nav-item i {
+        font-size: 16px;
+      }
+      .nav-item span {
+        font-size: 8px;
+      }
+      .top-bar {
+        height: 44px;
+        padding: 0 8px;
+      }
+      .acc-pill {
+        padding: 4px 10px 4px 8px;
+      }
+      .acc-title {
+        font-size: 9px;
+      }
+      .acc-val {
+        font-size: 12px;
+      }
+      .left-drawer-panel,
+      .right-drawer-panel {
+        padding: 12px 16px 66px 16px;
+      }
+
+      .left-drawer-panel .drawer-top-header h3,
+      .right-drawer-panel .drawer-top-header h3 {
+        font-size: 18px !important;
+      }
+      .left-drawer-panel .drawer-top-header .fa-chevron-left,
+      .right-drawer-panel .drawer-top-header .fa-chevron-left {
+        font-size: 18px !important;
+      }
+
+      .account-menu-item {
+        padding: 12px 14px !important;
+        font-size: 14px !important;
+        min-height: 48px !important;
+      }
+      .account-menu-item .item-left-side {
+        font-size: 14px !important;
+        gap: 12px !important;
+      }
+      .account-menu-item .item-left-side i {
+        font-size: 16px !important;
+        width: 20px !important;
+      }
+
+      .acc-select-card {
+        padding: 12px 16px 12px 14px !important;
+      }
+      .acc-select-card .acc-card-type {
+        font-size: 14px !important;
+      }
+      .acc-select-card .acc-card-balance {
+        font-size: 15px !important;
+      }
+
+      .deposit-field-group {
+        padding: 12px 14px !important;
+      }
+      .deposit-item-title {
+        font-size: 14px !important;
+      }
+      .deposit-item-sub {
+        font-size: 12px !important;
+      }
+
+      .param-control-group {
+        padding: 12px 14px !important;
+      }
+      .param-control-group .param-label {
+        font-size: 13px !important;
+      }
+      .param-control-group .param-value {
+        font-size: 16px !important;
+      }
+      .param-control-group .param-step-btn {
+        width: 30px !important;
+        height: 30px !important;
+        font-size: 15px !important;
+      }
+
+      .signal-search-card {
+        padding: 18px !important;
+      }
+      .signal-search-card .signal-text-title {
+        font-size: 16px !important;
+      }
+      .signal-search-card .signal-text-sub {
+        font-size: 13px !important;
+      }
+
+      .btn-deposit-submit,
+      .btn-start-robot,
+      .btn-step1-deposit {
+        height: 52px !important;
+        font-size: 15px !important;
+      }
+
+      .trade-item-row .trade-symbol {
+        font-size: 14px !important;
+      }
+      .trade-item-row .trade-amount {
+        font-size: 14px !important;
+      }
+      .trade-item-row .trade-profit {
+        font-size: 14px !important;
+      }
+
+      .usdt-deposit-header .usdt-title {
+        font-size: 18px !important;
+      }
+      .usdt-wallet-box .address {
+        font-size: 14px !important;
+      }
+      .usdt-amount-input input {
+        font-size: 18px !important;
+      }
+
+      .strategy-option-card {
+        padding: 14px 16px !important;
+      }
+      .strategy-option-title {
+        font-size: 15px !important;
+      }
+
+      #confirmPaymentAmountDisplay {
+        font-size: 24px !important;
+      }
+
+      .copy-trading-id-box .id-value {
+        font-size: 24px !important;
+      }
+
+      .mpesa-preset-btn {
+        padding: 12px 8px !important;
+        font-size: 13px !important;
+      }
+      .withdraw-preset-btn {
+        padding: 8px 14px !important;
+        font-size: 13px !important;
+      }
+      .transfer-preset-btn {
+        padding: 8px 14px !important;
+        font-size: 13px !important;
+      }
+
+      .top-asset-selector {
+        padding: 2px 10px 2px 10px;
+        height: 28px;
+        min-height: 28px;
+      }
+      .top-asset-selector .asset-symbol {
+        font-size: 11px;
+      }
+      .top-asset-selector .asset-status {
+        display: none !important;
+      }
+      .top-asset-selector i {
+        font-size: 9px;
+      }
+
+      #accountLeftPanel .user-avatar-box {
+        width: 44px !important;
+        height: 44px !important;
+        font-size: 20px !important;
+      }
+      .user-name-title {
+        font-size: 16px !important;
+      }
+      .user-id-sub {
+        font-size: 12px !important;
+      }
+
+      .balance-label {
+        font-size: 14px !important;
+      }
+      .balance-amount {
+        font-size: 16px !important;
+      }
+
+      .theme-toggle-switch {
+        width: 36px !important;
+        height: 20px !important;
+      }
+      .theme-toggle-switch .toggle-slider {
+        width: 14px !important;
+        height: 14px !important;
+      }
+      .theme-toggle-switch.active .toggle-slider {
+        transform: translateX(16px) !important;
+      }
+      .theme-label {
+        font-size: 11px !important;
+      }
+
+      /* Profile Copy ID mobile smaller */
+      .profile-copy-id-btn {
+        font-size: 11px !important;
+        padding: 4px 12px !important;
+      }
+      .profile-copy-id-btn i {
+        font-size: 10px !important;
+      }
+    }
+
+    /* M-PESA STK Prompt Status */
+    .stk-status-container {
+      display: none;
+      background: var(--bg-card);
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 12px;
+      border: 1px solid var(--border-light);
+      text-align: center;
+    }
+    .stk-status-container.show {
+      display: block;
+    }
+    .stk-status-container .stk-icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+    .stk-status-container .stk-icon.pending {
+      color: var(--warning);
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    .stk-status-container .stk-icon.success {
+      color: var(--success);
+    }
+    .stk-status-container .stk-icon.failed {
+      color: var(--btn-danger);
+    }
+    .stk-status-container .stk-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-white);
+    }
+    .stk-status-container .stk-sub {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+    .stk-status-container .stk-detail {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 8px;
+      word-break: break-all;
+    }
+    .stk-status-container .stk-reference {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 6px;
+      font-family: monospace;
+      background: var(--bg-input);
+      padding: 4px 8px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.4; }
+      100% { opacity: 1; }
+    }
+
+    /* =============================================
+       FULL-PAGE LOADING SPINNER
+       ============================================= */
+    #fullPageLoader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      background-color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+    #fullPageLoader.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .loader-spinner {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: 2px solid #e0e0e0;
+      border-top-color: #2563eb;
+      animation: spin 0.8s linear infinite;
+    }
+    .dark-mode .loader-spinner {
+      border: 2px solid #2a2a3a;
+      border-top-color: #0084ff;
+    }
+    .dark-mode #fullPageLoader {
+      background-color: #0b0e14;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============================================= -->
+  <!-- FULL-PAGE LOADING SPINNER                     -->
+  <!-- ============================================= -->
+  <div id="fullPageLoader">
+    <div class="loader-spinner"></div>
+  </div>
+
+  <div class="app-container" id="appContainer">
+    <aside class="left-sidebar">
+      <div class="brand-logo"><img src="image.png" alt="GoldlineMarkets"></div>
+      <nav class="nav-menu">
+        <button class="nav-item active" id="navMarket"><i class="fa-solid fa-chart-simple"></i><span>Market</span></button>
+        <button class="nav-item" id="navRobot"><i class="fa-solid fa-sliders"></i><span>Robot</span></button>
+        <button class="nav-item" id="navDeals"><i class="fa-solid fa-arrow-up-right-dots"></i><span>Trades</span></button>
+        <button class="nav-item" id="navSupport"><i class="fa-regular fa-comment-dots"></i><span>Support</span></button>
+        <button class="nav-item" id="navAccount"><i class="fa-regular fa-circle-user"></i><span>Account</span></button>
+      </nav>
+      <button class="nav-item gear-item"><i class="fa-solid fa-gear"></i></button>
+    </aside>
+    <div class="workspace-wrapper">
+      <main class="main-area">
+        <header class="top-bar">
+          <div class="top-bar-left">
+            <div class="top-asset-selector" id="topAssetSelector">
+              <span class="asset-symbol" id="topAssetSymbol">EURUSD</span>
+              <span class="asset-status" id="topAssetStatus">Open</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </div>
+          </div>
+          <div class="top-bar-center"></div>
+          <div class="top-bar-right">
+            <div class="acc-pill" id="demoAccPill">
+              <div id="topBarIcon" style="width:28px; height:28px; border-radius:50%; overflow:hidden; display:flex; align-items:center; justify-content:center; background:var(--bg-hover);">
+                <img src="logo.jpg" alt="Demo" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+              </div>
+              <div class="acc-info">
+                <span class="acc-title" id="currentAccTitle">Demo Account</span>
+                <span class="acc-val" id="currentAccVal">Loading...</span>
+              </div>
+              <i class="fa-solid fa-chevron-down" style="font-size: 11px; color: var(--text-secondary);"></i>
+            </div>
+          </div>
+        </header>
+        <div class="chart-container-box">
+          <div id="tradingview_widget"></div>
+          <div id="chartOverlay" class="chart-overlay"></div>
+        </div>
+      </main>
+      <aside class="right-sidebar">
+        <div class="desktop-trade-controls">
+          <div class="side-title">Manual trade</div>
+          <div class="trade-input-group" style="margin-bottom: 10px;">
+            <span class="input-label">Stake</span>
+            <div class="input-control-row">
+              <input class="input-val" id="tradeAmount" value="$5" />
+              <div style="display: flex; gap: 4px;">
+                <button class="step-btn" id="decrementAmount">-</button>
+                <button class="step-btn" id="incrementAmount">+</button>
+              </div>
+            </div>
+          </div>
+          <div class="trade-input-group" style="margin-bottom: 12px;">
+            <span class="input-label">Duration</span>
+            <div class="input-control-row">
+              <span class="input-val" id="tradeDuration" style="cursor:default; width:auto;">5s</span>
+              <div style="display: flex; gap: 4px;">
+                <button class="step-btn" id="decrementDuration">-</button>
+                <button class="step-btn" id="incrementDuration">+</button>
+              </div>
+            </div>
+          </div>
+          <div class="desktop-trade-btns">
+            <button class="btn-sell-lg"><span>SELL</span><strong class="live-sell-price">---</strong></button>
+            <button class="btn-buy-lg"><span>BUY</span><strong class="live-buy-price">---</strong></button>
+          </div>
+        </div>
+        <div class="mobile-trade-controls">
+          <button class="mobile-btn-sell"><span>SELL</span><strong class="live-sell-price">---</strong></button>
+          <button class="mobile-btn-buy"><span>BUY</span><strong class="live-buy-price">---</strong></button>
+        </div>
+      </aside>
+    </div>
+
+    <!-- ==================== PANELS ==================== -->
+
+    <!-- Account Selection Panel -->
+    <div id="accountSelectionPanel" class="right-drawer-panel hidden">
+      <div class="drawer-top-header">
+        <h3><i class="fa-solid fa-chevron-left" id="closeAccountSelectionPanel" style="cursor:pointer;font-size:16px;margin-right:4px;"></i> Account selection</h3>
+      </div>
+      <div class="acc-selection-list">
+        <div class="acc-select-card active" data-account="demo" data-title="Demo Account" data-balance="Loading..." data-icon="logo.jpg" data-currency="USD">
+          <div class="acc-card-icon"><img src="logo.jpg" alt="Demo"></div>
+          <div class="acc-card-details"><span class="acc-card-type">Demo Account</span><span class="acc-card-balance">Loading...</span></div>
+        </div>
+        <div class="acc-select-card" data-account="real-usd" data-title="Real USD Account" data-balance="Loading..." data-icon="logo.png" data-currency="USD">
+          <div class="acc-card-icon"><img src="logo.png" alt="USD"></div>
+          <div class="acc-card-details"><span class="acc-card-type">Real USD Account</span><span class="acc-card-balance">Loading...</span></div>
+        </div>
+        <div class="acc-select-card" data-account="real-usdt" data-title="Real USDT Account" data-balance="Loading..." data-icon="trn.jpeg" data-currency="USDT">
+          <div class="acc-card-icon"><img src="trn.jpeg" alt="USDT"></div>
+          <div class="acc-card-details"><span class="acc-card-type">Real USDT Account</span><span class="acc-card-balance">Loading...</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Robot Panel -->
+    <div id="robotSettingsPanel" class="left-drawer-panel hidden">
+      <div class="drawer-scroll-body">
+        <div class="drawer-top-header" style="margin-bottom: 12px;">
+          <h3><i class="fa-solid fa-chevron-left" id="closeRobotSettings" style="cursor:pointer;font-size:16px;margin-right:4px;"></i> Robot Settings</h3>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <div style="font-size: 13px; font-weight: 600; color: var(--text-white); margin-bottom: 8px;">Execution account</div>
+          <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 8px;">Available balance</div>
+
+          <div class="execution-account-card" id="execAccountCard">
+            <div class="account-row">
+              <div class="account-icon" id="execAccountIcon"><img src="logo.jpg" alt="Demo"></div>
+              <div class="account-info">
+                <div class="account-name" id="execAccountName">Demo Account</div>
+                <div class="account-balance" id="execAccountBalance">$100.00 available</div>
+              </div>
+              <div class="account-arrow" id="execAccountArrow"><i class="fa-solid fa-chevron-down"></i></div>
+            </div>
+          </div>
+
+          <!-- INLINE EXECUTION ACCOUNT OPTIONS (hidden by default) -->
+          <div id="inlineExecutionAccounts" style="display: none; margin-top: 4px; padding: 6px 0 2px 0;">
+            <div style="background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 12px; overflow: hidden;">
+              <div class="acc-selection-list" style="gap: 4px; padding: 4px;">
+                <!-- Demo Account -->
+                <div class="acc-select-card active" data-account="demo" data-title="Demo Account" data-balance="Loading..." data-icon="logo.jpg" data-currency="USD" style="border-radius: 10px; padding: 8px 12px; gap: 10px; background: var(--bg-active);">
+                  <div class="acc-card-icon" style="width: 28px; height: 28px;"><img src="logo.jpg" alt="Demo"></div>
+                  <div class="acc-card-details">
+                    <span class="acc-card-type" style="font-size: 12px;">Demo Account</span>
+                    <span class="acc-card-balance" style="font-size: 12px;">Loading...</span>
+                  </div>
+                </div>
+                <!-- Real USD Account -->
+                <div class="acc-select-card" data-account="real-usd" data-title="Real USD Account" data-balance="Loading..." data-icon="logo.png" data-currency="USD" style="border-radius: 10px; padding: 8px 12px; gap: 10px;">
+                  <div class="acc-card-icon" style="width: 28px; height: 28px;"><img src="logo.png" alt="USD"></div>
+                  <div class="acc-card-details">
+                    <span class="acc-card-type" style="font-size: 12px;">Real USD Account</span>
+                    <span class="acc-card-balance" style="font-size: 12px;">Loading...</span>
+                  </div>
+                </div>
+                <!-- Real USDT Account -->
+                <div class="acc-select-card" data-account="real-usdt" data-title="Real USDT Account" data-balance="Loading..." data-icon="trn.jpeg" data-currency="USDT" style="border-radius: 10px; padding: 8px 12px; gap: 10px;">
+                  <div class="acc-card-icon" style="width: 28px; height: 28px;"><img src="trn.jpeg" alt="USDT"></div>
+                  <div class="acc-card-details">
+                    <span class="acc-card-type" style="font-size: 12px;">Real USDT Account</span>
+                    <span class="acc-card-balance" style="font-size: 12px;">Loading...</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- INLINE EXECUTION ACCOUNT OPTIONS END -->
+
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <div style="font-size: 13px; font-weight: 600; color: var(--text-white); margin-bottom: 8px;">Order parameters</div>
+          <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 8px;">Applied to each order</div>
+          <div class="robot-param-row" style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <div class="param-control-group" style="flex:1; min-width:120px;">
+              <span class="param-label">Stake</span>
+              <div class="param-actions">
+                <button class="param-step-btn" id="robotDecrementAmount">−</button>
+                <input class="param-value" id="robotAmount" value="$5" />
+                <button class="param-step-btn" id="robotIncrementAmount">+</button>
+              </div>
+            </div>
+            <div class="param-control-group" style="flex:1; min-width:120px;">
+              <span class="param-label">Duration</span>
+              <div class="param-actions">
+                <button class="param-step-btn" id="robotDecrementDuration">−</button>
+                <span class="param-value" id="robotDuration" style="cursor:default; width:auto;">5s</span>
+                <button class="param-step-btn" id="robotIncrementDuration">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 8px;">
+          <div style="font-size: 13px; font-weight: 600; color: var(--text-white); margin-bottom: 8px;">Instrument and timing</div>
+          <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Strategy routing</div>
+          <div style="background-color: var(--bg-card); border: 1px solid var(--border-light); border-radius: 12px; padding: 10px 12px; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;" id="assetSelectorTrigger">
+            <div>
+              <span style="font-size: 13px; font-weight: 600; color: var(--text-white);" id="selectedAssetDisplay">EURUSD</span>
+            </div>
+            <i class="fa-solid fa-chevron-right" style="color: var(--text-secondary); font-size: 12px;"></i>
+          </div>
+          <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.4; padding: 0 4px;">The robot will switch to the most profitable asset if the selected one is below 80% or the market closes.</div>
+        </div>
+
+        <div class="signal-search-card" id="signalSearchCard">
+          <div class="signal-status">
+            <div class="signal-indicator" id="signalIndicator">
+              <img src="image.jpg" alt="Signal Icon" id="signalIcon">
+            </div>
+            <div>
+              <div class="signal-text-title" id="signalStatusTitle">Tap to search for a signal</div>
+              <div class="signal-text-sub" id="signalStatusSub">Indicator: <strong>RSI</strong></div>
+            </div>
+          </div>
+
+          <div class="info-row hidden-row" id="robotRow">
+            <div class="info-label">Robot</div>
+            <div class="info-value" id="robotValue">—</div>
+          </div>
+          <div class="info-row hidden-row" id="winRateRow">
+            <div class="info-label">Win Rate</div>
+            <div class="info-value" id="winRateValue">—</div>
+          </div>
+
+          <div class="action-btn-container hidden-btn" id="buttonContainer">
+            <button class="btn-robot inactive" id="robotBtn">Analyze Again</button>
+          </div>
+        </div>
+
+        <div style="margin: 6px 0 10px 0;">
+          <div style="font-size: 13px; font-weight: 600; color: var(--text-white); margin-bottom: 6px;">Risk management</div>
+          <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Exit guardrails</div>
+          <div class="risk-management-grid">
+            <div class="risk-card" id="stopLossCard">
+              <span class="risk-label">Stop loss</span>
+              <input class="risk-value" id="riskStopLoss" value="$100.00" />
+              <span class="risk-sub">Limit downside</span>
+            </div>
+            <div class="risk-card" id="takeProfitCard">
+              <span class="risk-label">Take profit</span>
+              <input class="risk-value" id="riskTakeProfit" value="$200.00" />
+              <span class="risk-sub">Lock gains</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 4px; padding: 8px 12px; background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-light);">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 12px; color: var(--text-secondary);">Status:</span>
+            <span id="botStatus" style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">Stopped</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+            <span style="font-size: 12px; color: var(--text-secondary);">Trades:</span>
+            <span id="botTradeCount" style="font-size: 12px; font-weight: 600; color: var(--text-white);">0</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+            <span style="font-size: 12px; color: var(--text-secondary);">Profits:</span>
+            <span id="botProfitDisplay" style="font-size: 12px; font-weight: 600; color: var(--success);">$0.00</span>
+            <span style="font-size: 12px; color: var(--text-secondary);">Losses:</span>
+            <span id="botLossCount" style="font-size: 12px; font-weight: 600; color: var(--btn-danger);">0</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+            <span style="font-size: 12px; color: var(--text-secondary);">Cumulative P/L:</span>
+            <span id="botCumulativeProfitDisplay" style="font-size: 12px; font-weight: 600; color: var(--success);">$0.00</span>
+          </div>
+        </div>
+      </div>
+      <div class="drawer-fixed-footer"><button class="btn-start-robot" id="startRobotBtn">Start trading</button></div>
+    </div>
+
+    <!-- Asset Selection Panel -->
+    <div id="assetSelectionPanel" class="left-drawer-panel hidden" style="z-index: 115; width: 320px;">
+      <div class="drawer-scroll-body">
+        <div class="drawer-top-header">
+          <h3 style="font-size: 16px;"><i class="fa-solid fa-chevron-left signal-back-btn" id="backFromAssetSelection" style="cursor: pointer; font-size: 14px; margin-right: 4px;"></i> Asset selection</h3>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px;" id="assetListContainer"></div>
+      </div>
+    </div>
+
+    <!-- Strategy Selection Panel -->
+    <div id="strategySelectionPanel" class="left-drawer-panel hidden" style="z-index: 110;">
+      <div class="drawer-scroll-body">
+        <div class="drawer-top-header">
+          <h3><i class="fa-solid fa-chevron-left signal-back-btn" id="backFromStrategy" style="cursor: pointer; font-size: 16px; margin-right: 4px;"></i> Strategy selection</h3>
+        </div>
+        <div class="strategy-list-container">
+          <div class="strategy-option-card" data-strategy="Fixed amount" data-risk="Low risk" data-balance="Recommended balance: at least $50.00" data-riskclass="low">
+            <div class="strategy-option-icon"><i class="fa-solid fa-chess-pawn"></i></div>
+            <div class="strategy-option-details">
+              <span class="strategy-option-title">Fixed amount</span>
+              <div class="risk-indicator-row low"><i class="fa-solid fa-triangle-exclamation"></i><span>Low risk</span></div>
+              <span class="strategy-option-balance">Recommended balance: at least $50.00</span>
+            </div>
+          </div>
+          <div class="strategy-option-card green-icon" data-strategy="Conservative" data-risk="Low risk" data-balance="Recommended balance: at least $100.00" data-riskclass="low">
+            <div class="strategy-option-icon"><i class="fa-solid fa-chess-bishop"></i></div>
+            <div class="strategy-option-details">
+              <span class="strategy-option-title">Conservative</span>
+              <div class="risk-indicator-row low"><i class="fa-solid fa-triangle-exclamation"></i><span>Low risk</span></div>
+              <span class="strategy-option-balance">Recommended balance: at least $100.00</span>
+            </div>
+          </div>
+          <div class="strategy-option-card active" data-strategy="Optimal" data-risk="Medium risk" data-balance="Recommended balance: at least $200.00" data-riskclass="medium">
+            <div class="strategy-option-icon"><i class="fa-solid fa-chess-knight"></i></div>
+            <div class="strategy-option-details">
+              <span class="strategy-option-title">Optimal</span>
+              <div class="risk-indicator-row medium"><i class="fa-solid fa-triangle-exclamation"></i><span>Medium risk</span></div>
+              <span class="strategy-option-balance">Recommended balance: at least $200.00</span>
+            </div>
+          </div>
+          <div class="strategy-option-card red-icon" data-strategy="Aggressive" data-risk="High risk" data-balance="Recommended balance: at least $500.00" data-riskclass="high">
+            <div class="strategy-option-icon"><i class="fa-solid fa-chess-king"></i></div>
+            <div class="strategy-option-details">
+              <span class="strategy-option-title">Aggressive</span>
+              <div class="risk-indicator-row high"><i class="fa-solid fa-triangle-exclamation"></i><span>High risk</span></div>
+              <span class="strategy-option-balance">Recommended balance: at least $500.00</span>
+            </div>
+            <div class="lock-icon-badge"><i class="fa-solid fa-lock"></i></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Account Left Panel -->
+    <div id="accountLeftPanel" class="left-drawer-panel hidden">
+      <div class="drawer-scroll-body">
+        <div class="drawer-top-header" style="margin-bottom: 2px;">
+          <h3><i class="fa-solid fa-chevron-left" id="closeAccountLeftPanel" style="cursor:pointer;font-size:16px;margin-right:4px;"></i> Account</h3>
+        </div>
+        <div class="user-profile-header">
+          <div class="user-avatar-box"><i class="fa-solid fa-user"></i></div>
+          <div class="user-details">
+            <span class="user-name-title" id="profileUsername">User_138192988</span>
+            <span class="user-id-sub" id="profileUserId">ID 138192988</span>
+          </div>
+        </div>
+        <div class="balance-header-row">
+          <span class="balance-label">Balance</span>
+          <span class="balance-amount" id="accountBalanceDisplay">Loading...</span>
+        </div>
+        <div class="account-menu-list">
+          <div class="account-menu-item" id="accMenuDeposit"><div class="item-left-side"><i class="fa-solid fa-wallet"></i><span>Deposit</span></div><i class="fa-solid fa-chevron-right item-right-side"></i></div>
+          <div class="account-menu-item" id="accMenuTransfer"><div class="item-left-side"><i class="fa-solid fa-arrow-right-arrow-left"></i><span>Transfer</span></div><i class="fa-solid fa-chevron-right item-right-side"></i></div>
+          <div class="account-menu-item" id="accMenuWithdraw"><div class="item-left-side"><i class="fa-solid fa-arrow-down"></i><span>Withdraw</span></div><i class="fa-solid fa-chevron-right item-right-side"></i></div>
+          <div class="account-menu-item" id="accMenuIdentity">
+            <div class="item-left-side"><i class="fa-solid fa-id-card"></i><span>Identity verification</span></div>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span class="verification-badge unverified" id="identityStatusBadge">Not verified</span>
+              <i class="fa-solid fa-chevron-right item-right-side"></i>
+            </div>
+          </div>
+          <div class="account-menu-item" id="accMenuTransactions"><div class="item-left-side"><i class="fa-solid fa-list-ul"></i><span>Transactions</span></div><i class="fa-solid fa-chevron-right item-right-side"></i></div>
+          <div class="account-menu-item" id="accMenuReferral"><div class="item-left-side"><i class="fa-solid fa-gift"></i><span>Referral program</span></div><i class="fa-solid fa-chevron-right item-right-side"></i></div>
+          <div class="account-menu-item" id="accMenuTradeHistory"><div class="item-left-side"><i class="fa-solid fa-clock-rotate-left"></i><span>Trade history</span></div><i class="fa-solid fa-chevron-right item-right-side"></i></div>
+          <div class="account-menu-item" id="accMenuCopyTrading"><div class="item-left-side"><i class="fa-solid fa-copy"></i><span>Copy trading</span></div><i class="fa-solid fa-chevron-right item-right-side"></i></div>
+          <div class="account-menu-item" id="joinCommunityBtn">
+            <div class="item-left-side"><i class="fa-solid fa-paper-plane"></i><span>Join our community</span></div>
+            <i class="fa-solid fa-chevron-right item-right-side"></i>
+          </div>
+          <div class="account-menu-item theme-item" id="accMenuTheme">
+            <div class="item-left-side"><i class="fa-solid fa-circle-half-stroke"></i><span>Theme</span></div>
+            <div class="theme-toggle-container">
+              <span class="theme-label" id="themeLabel">Light</span>
+              <div class="theme-toggle-switch active" id="themeToggleSwitch">
+                <div class="toggle-slider"></div>
+              </div>
+            </div>
+          </div>
+          <div class="account-menu-item" id="accMenuProfile"><div class="item-left-side"><i class="fa-regular fa-user"></i><span>Profile</span></div><i class="fa-solid fa-chevron-right item-right-side"></i></div>
+          <div class="account-menu-item" id="aboutUsBtn">
+            <div class="item-left-side"><i class="fa-solid fa-circle-info"></i><span>About us</span></div>
+            <i class="fa-solid fa-chevron-right item-right-side"></i>
+          </div>
+          <div class="account-menu-item logout-item" id="logoutBtn"><div class="item-left-side"><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Log out</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Panel -->
+    <div id="profilePanel" class="left-drawer-panel hidden">
+      <div class="drawer-scroll-body">
+        <div class="drawer-top-header">
+          <h3><i class="fa-solid fa-chevron-left" id="backFromProfile" style="cursor: pointer; font-size: 16px; margin-right: 4px;"></i> Profile</h3>
+        </div>
+        <div class="profile-info-list">
+          <div class="profile-info-row"><span class="profile-info-label">Username</span><span class="profile-info-val" id="profileUsernameDisplay">—</span></div>
+          <div class="profile-info-row">
+            <span class="profile-info-label">ID</span>
+            <span class="profile-info-val" id="profileIdDisplay">—</span>
+          </div>
+          <div class="profile-info-row"><span class="profile-info-label">Email</span><span class="profile-info-val" id="profileEmailDisplay">—</span></div>
+          <div class="profile-info-row"><span class="profile-info-label">Phone</span><span class="profile-info-val" id="profilePhoneDisplay">—</span></div>
+          <div class="profile-info-row"><span class="profile-info-label">Country</span><span class="profile-info-val" id="profileCountryDisplay">Kenya</span></div>
+          <div class="profile-info-row"><span class="profile-info-label">Verification</span><span class="profile-info-val" id="profileVerificationDisplay">Not verified</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Support Panel -->
+    <div id="supportPanel" class="left-drawer-panel hidden">
+      <div class="drawer-scroll-body">
+        <div class="drawer-top-header">
+          <h3><i class="fa-solid fa-chevron-left" id="closeSupportPanel" style="cursor:pointer;font-size:16px;margin-right:4px;"></i> Support</h3>
+        </div>
+        <div class="support-section-subtitle">Need help?</div>
+        <p class="support-subtext">Our 24/7 available support team is ready to answer your questions.</p>
+        <div class="chat-card" id="chatWithSupportBtn">
+          <div class="chat-icon-box"><i class="fa-solid fa-headset"></i></div>
+          <div class="chat-card-info"><span class="chat-card-title">Chat with support</span><span class="chat-card-desc">How can we help?</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Support Chat Panel (NEW - MINIMAL ADDITION) -->
+    <div id="supportChatPanel" class="left-drawer-panel hidden">
+      <div class="drawer-scroll-body" style="padding-bottom: 8px;">
+        <div class="drawer-top-header" style="margin-bottom: 10px;">
+          <h3><i class="fa-solid fa-chevron-left" id="closeSupportChat" style="cursor:pointer;font-size:16px;margin-right:4px;"></i> Chat with support</h3>
+        </div>
+        <div class="support-chat-wrapper">
+          <div class="support-chat-messages" id="supportChatMessages">
+            <div class="support-chat-loading">Loading conversation...</div>
+          </div>
+          <div class="support-chat-input-row">
+            <textarea id="supportChatInput" class="support-chat-input" placeholder="Type your message..." rows="1"></textarea>
+            <button id="supportChatSendBtn" class="support-chat-send-btn" title="Send"><i class="fa-solid fa-paper-plane"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Deals Panel -->
+    <div id="dealsPanel" class="left-drawer-panel hidden">
+      <div class="drawer-scroll-body">
+        <div class="drawer-top-header" style="margin-bottom: 8px;">
+          <h3><i class="fa-solid fa-chevron-left" id="closeDealsPanel" style="cursor:pointer;font-size:16px;margin-right:4px;"></i> Trades</h3>
+        </div>
+        <div class="section-title">Active Trades</div>
+        <div id="dealsActiveContent" class="deals-empty-state"><i class="fa-solid fa-arrow-up-right-dots"></i><p>No active trades at the moment</p></div>
+        <div class="section-title">History</div>
+        <div id="dealsClosedContent" class="deals-empty-state"><i class="fa-solid fa-clock-rotate-left"></i><p>No trade history available</p></div>
+      </div>
+    </div>
+
+    <!-- Account Activation Panel -->
+    <div id="accountActivationPanel" class="right-drawer-panel hidden">
+      <div class="drawer-top-header" style="margin-bottom: 12px;">
+        <h3><i class="fa-solid fa-chevron-left" id="closeAccountActivationPanel" style="cursor:pointer;font-size:16px;margin-right:4px;"></i> Account activation</h3>
+      </div>
+      <div class="steps-progress-container">
+        <div class="step-node"><div class="step-circle"><i class="fa-solid fa-check" style="font-size: 12px;"></i></div><span class="step-label-text">Install the app</span></div>
+        <div class="step-node"><div class="step-circle"><i class="fa-solid fa-check" style="font-size: 12px;"></i></div><span class="step-label-text">Create an account</span></div>
+        <div class="step-node"><div class="step-circle inactive">3</div><span class="step-label-text">Make a deposit</span></div>
+      </div>
+      <div class="feature-cards-row">
+        <div class="feature-mini-card"><div class="feature-mini-icon" style="background: linear-gradient(135deg, #232d4a 0%, #17213b 100%); color: var(--btn-primary);"><i class="fa-solid fa-wand-magic-sparkles"></i></div><span class="feature-mini-title">Trade with AI Indicator</span></div>
+        <div class="feature-mini-card"><div class="feature-mini-icon" style="background: linear-gradient(135deg, #1b263b 0%, #151c2c 100%); color: var(--btn-primary);"><i class="fa-solid fa-chart-line"></i></div><span class="feature-mini-title">Trading on real account</span></div>
+        <div class="feature-mini-card"><div class="feature-mini-icon" style="background: linear-gradient(135deg, #2b2518 0%, #1f1b13 100%); color: var(--warning);"><i class="fa-solid fa-crown"></i></div><span class="feature-mini-title">Join our VIP channel</span></div>
+      </div>
+      <div class="wallet-graphic-container"><div class="wallet-green-box"><i class="fa-solid fa-wallet"></i></div></div>
+      <div class="deposit-main-heading">Activate Your Account</div>
+      <div class="deposit-sub-description">To activate your account and access withdrawals, you need to make at least one successful deposit. Click the button below to get started.</div>
+      <button class="btn-step1-deposit" id="proceedToStep2Btn">Activate Account</button>
+    </div>
+
+    <!-- Deposit Form Panel -->
+    <div id="accountDepositFormPanel" class="right-drawer-panel hidden" style="z-index: 110;">
+      <div class="drawer-top-header" style="margin-bottom: 10px;">
+        <h3 style="font-size: 16px;"><i class="fa-solid fa-chevron-left" id="backToActivationStep1" style="cursor: pointer; font-size: 14px; margin-right: 4px;"></i> Deposit</h3>
+      </div>
+      <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 6px;" id="depositAccountIdHeader">USD Account #8492019482</div>
+      <div class="deposit-sub-title">Account</div>
+      <div class="deposit-field-group" id="depositAccountSelectorTrigger">
+        <div class="deposit-row-content">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 28px; height: 28px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: var(--bg-hover);"><img src="logo.png" alt="USD Account" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"></div>
+            <div><div class="deposit-item-title" id="depositSelectedAccountName">USD Account</div><div class="deposit-item-sub" id="depositSelectedAccountBalance">USD 0.00</div></div>
+          </div>
+          <i class="fa-solid fa-chevron-right" style="color: var(--text-secondary); font-size: 12px;"></i>
+        </div>
+      </div>
+      <div class="deposit-sub-title">Deposit amount</div>
+      <div class="deposit-field-group" id="depositAmountFieldTrigger">
+        <div class="deposit-row-content">
+          <div class="deposit-item-title" id="depositAmountDisplay" style="font-size: 15px;">$50.00</div>
+          <i class="fa-solid fa-chevron-right" style="color: var(--text-secondary); font-size: 12px;"></i>
+        </div>
+      </div>
+      <div class="deposit-sub-title">Payment method</div>
+      <div class="deposit-field-group" id="depositPaymentMethodTrigger" style="margin-bottom: 14px;">
+        <div class="deposit-row-content">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 28px; height: 28px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: var(--bg-hover);"><img src="mpesa.png" alt="Payment Method" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"></div>
+            <div class="deposit-item-title" id="depositPaymentMethodTitle">Mpesa</div>
+          </div>
+          <i class="fa-solid fa-chevron-right" style="color: var(--text-secondary); font-size: 12px;"></i>
+        </div>
+      </div>
+      <button class="btn-deposit-submit" id="submitDepositBtn">Make a deposit</button>
+    </div>
+
+    <!-- Confirm Payment Panel -->
+    <div id="confirmPaymentPanel" class="right-drawer-panel hidden" style="z-index: 130;">
+      <div class="drawer-top-header" style="margin-bottom: 20px;">
+        <h3 style="font-size: 18px; display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-chevron-left" id="backToDepositForm" style="cursor: pointer; font-size: 14px;"></i> Confirm payment</h3>
+      </div>
+      <div style="display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 24px;">
+        <div id="confirmPaymentLogoWrapper" style="width: 52px; height: 52px; border-radius: 50%; background: var(--bg-hover); display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 12px; border: 1px solid var(--border-light);"><img id="confirmPaymentLogoImg" src="mpesa.png" alt="Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"></div>
+        <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Deposit amount</div>
+        <div id="confirmPaymentAmountDisplay" style="font-size: 24px; font-weight: 800; color: var(--text-white);">$50.00</div>
+      </div>
+      <div style="background-color: var(--bg-card); border: 1px solid var(--border-light); border-radius: 16px; padding: 4px 16px; margin-bottom: auto; display: flex; flex-direction: column;">
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--border-color);"><span style="font-size: 13px; color: var(--text-secondary);">Payment method</span><span id="confirmPaymentMethodLabel" style="font-size: 13px; font-weight: 600; color: var(--text-white);">Mpesa</span></div>
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--border-color);"><span style="font-size: 13px; color: var(--text-secondary);">Deposit to account</span><div style="display: flex; flex-direction: column; text-align: right;"><span id="confirmPaymentAccountName" style="font-size: 13px; font-weight: 600; color: var(--text-white);">USD Account</span><span id="confirmPaymentAccountId" style="font-size: 11px; color: var(--text-secondary);">#8492019482</span></div></div>
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 0;"><span style="font-size: 13px; color: var(--text-secondary);">Currency</span><span id="confirmPaymentCurrencyLabel" style="font-size: 13px; font-weight: 600; color: var(--text-white);">USD</span></div>
+      </div>
+      <div style="margin-top: 16px;">
+        <div style="font-size: 11px; color: var(--text-secondary); text-align: center; margin-bottom: 12px;">You will be redirected to the payment system page afterwards</div>
+        <button class="btn-deposit-submit" id="finalConfirmActionBtn">Confirm</button>
+      </div>
+    </div>
+
+    <!-- KES Deposit Amount Panel -->
+    <div id="kesDepositAmountPanel" class="right-drawer-panel hidden" style="z-index: 125;">
+      <div class="drawer-top-header" style="margin-bottom: 12px;">
+        <h3 style="font-size: 16px;"><i class="fa-solid fa-chevron-left" id="backFromKesDepositAmount" style="cursor: pointer; font-size: 14px; margin-right: 4px;"></i> Deposit amount</h3>
+      </div>
+      <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 6px;" id="depositAmountMinLabel">Deposit amount (Min KES 675)</div>
+      <div style="background-color: var(--bg-card); border: 2px solid var(--btn-primary); border-radius: 12px; padding: 10px 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+        <span style="font-size: 18px; font-weight: 700; color: var(--text-white);" id="amountCurrencyPrefix">KES</span>
+        <input type="number" id="customKesInput" value="6750" min="675" style="background: transparent; border: none; font-size: 18px; font-weight: 700; color: var(--text-white); width: 100%; outline: none;" />
+      </div>
+      <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 16px;" id="depositAmountRecLabel">Recommended deposit for the robot is at least 50 USD</div>
+      <div class="mpesa-preset-grid" id="presetAmountsGrid">
+        <button class="mpesa-preset-btn" data-amount="675">KES 675.00</button>
+        <button class="mpesa-preset-btn" data-amount="1350">KES 1,350.00</button>
+        <button class="mpesa-preset-btn" data-amount="6750">KES 6,750.00</button>
+        <button class="mpesa-preset-btn" data-amount="13500">KES 13,500.00</button>
+        <button class="mpesa-preset-btn" data-amount="27000">KES 27,000.00</button>
+        <button class="mpesa-preset-btn" data-amount="67500">KES 67,500.00</button>
+        <button class="mpesa-preset-btn" data-amount="135000">KES 135,000.00</button>
+        <button class="mpesa-preset-btn" data-amount="675000">KES 675,000.00</button>
+      </div>
+      <button class="btn-deposit-submit" id="confirmKesAmountBtn" style="margin-top: auto;">Confirm</button>
+    </div>
+
+    <!-- M-PESA STK Panel -->
+    <div id="mpesaStkPanel" class="right-drawer-panel hidden" style="z-index: 135;">
+      <div class="drawer-top-header" style="margin-bottom: 12px;">
+        <h3 style="font-size: 16px;"><i class="fa-solid fa-chevron-left" id="backFromMpesaStk" style="cursor: pointer; font-size: 14px; margin-right: 4px;"></i> Deposit</h3>
+      </div>
+      <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">M-PESA STK is used for your Real KES account.</div>
+      <div class="deposit-sub-title">Deposit amount</div>
+      <div style="background-color: var(--bg-card); border: 2px solid var(--btn-primary); border-radius: 12px; padding: 12px 16px; margin-bottom: 12px;">
+        <span style="font-size: 20px; font-weight: 700; color: var(--text-white);" id="mpesaStkAmount">KES 6,750.00</span>
+      </div>
+      <div class="mpesa-method-label">
+        <div class="icon"><img src="mpesa.png" alt="M-PESA"></div>
+        <div>
+          <div class="label">M-PESA STK Push</div>
+          <div class="sub-label">Payment method</div>
+        </div>
+      </div>
+      <div class="deposit-sub-title">M-PESA phone number</div>
+      <div class="mpesa-phone-input">
+        <span class="prefix">+254</span>
+        <input type="text" id="mpesaPhoneInput" placeholder="700 000 000" maxlength="9" autocomplete="off" />
+      </div>
+      <button class="btn-deposit-submit" id="submitMpesaStkBtn">Start secure deposit</button>
+
+      <!-- STK Status Container -->
+      <div class="stk-status-container" id="stkStatusContainer">
+        <div class="stk-icon pending" id="stkStatusIcon"><i class="fa-solid fa-spinner fa-spin"></i></div>
+        <div class="stk-title" id="stkStatusTitle">Sending prompt...</div>
+        <div class="stk-sub" id="stkStatusSub">Please check your phone</div>
+        <div class="stk-detail" id="stkStatusDetail"></div>
+        <div class="stk-reference" id="stkStatusReference"></div>
+      </div>
+    </div>
+
+    <!-- Deposit Account Choice Panel -->
+    <div id="depositAccountChoicePanel" class="right-drawer-panel hidden" style="z-index: 120;">
+      <div class="drawer-top-header">
+        <h3><i class="fa-solid fa-chevron-left" id="backFromDepositAccountChoice" style="cursor: pointer; font-size: 16px; margin-right: 4px;"></i> Choose real account</h3>
+      </div>
+      <div class="acc-selection-list">
+        <div class="deposit-acc-option" data-accname="USD Account" data-accid="USD Account #8492019482" data-currency="USD" data-account-key="real-usd" style="background-color: var(--bg-card); border: 2px solid var(--btn-primary); border-radius: 60px; padding: 12px 20px 12px 16px; display: flex; align-items: center; gap: 14px; cursor: pointer;">
+          <div style="width: 36px; height: 36px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: var(--bg-hover);"><img src="logo.png" alt="USD" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"></div>
+          <div style="display: flex; flex-direction: column; gap: 2px;">
+            <span style="font-size: 13px; font-weight: 600; color: var(--text-white);">USD Account</span>
+            <span style="font-size: 14px; font-weight: 700; color: var(--text-white);" id="depositUsdBalanceDisplay">USD 0.00</span>
+          </div>
+        </div>
+        <div class="deposit-acc-option" data-accname="USDT Account" data-accid="USDT Account #2940306875" data-currency="USDT" data-account-key="real-usdt" style="background-color: var(--bg-card); border: 1px solid var(--border-light); border-radius: 60px; padding: 12px 20px 12px 16px; display: flex; align-items: center; gap: 14px; cursor: pointer;">
+          <div style="width: 36px; height: 36px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: var(--bg-hover);"><img src="trn.jpeg" alt="USDT" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"></div>
+          <div style="display: flex; flex-direction: column; gap: 2px;">
+            <span style="font-size: 13px; font-weight: 600; color: var(--text-white);">USDT Account</span>
+            <span style="font-size: 14px; font-weight: 700; color: var(--text-white);" id="depositUsdtBalanceDisplay">USDT 0.00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment Method Choice Panel -->
+    <div id="paymentMethodChoicePanel" class="right-drawer-panel hidden" style="z-index: 120;">
+      <div class="drawer-top-header">
+        <h3><i class="fa-solid fa-chevron-left" id="backFromPaymentMethodChoice" style="cursor: pointer; font-size: 16px; margin-right: 4px;"></i> Payment method</h3>
+      </div>
+      <div style="font-size: 11px; font-weight: 700; color: var(--text-secondary); margin-bottom: 12px; letter-spacing: 0.5px;">RECOMMENDED & CRYPTO <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--warning); font-size: 10px;"></i></div>
+      <div class="acc-selection-list">
+        <div class="payment-method-option acc-select-card active" data-method="Mpesa" data-logo="mpesa.png">
+          <div class="acc-card-icon" style="background: var(--bg-hover); color: var(--btn-danger); overflow: hidden;"><img src="mpesa.png" alt="Mpesa" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"></div>
+          <div class="acc-card-details"><span class="acc-card-type" style="color: var(--text-white); font-weight: 700;">Mpesa</span></div>
+        </div>
+        <div class="payment-method-option acc-select-card" data-method="Binance" data-logo="binance.png">
+          <div class="acc-card-icon" style="background: var(--bg-hover); color: #f3ba2f; overflow: hidden;"><img src="binance.png" alt="Binance" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"></div>
+          <div class="acc-card-details"><span class="acc-card-type">Binance</span></div>
+        </div>
+        <div class="payment-method-option acc-select-card" data-method="Bybit" data-logo="bybit.png">
+          <div class="acc-card-icon" style="background: var(--bg-hover); color: var(--btn-primary); overflow: hidden;"><img src="bybit.png" alt="Bybit" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"></div>
+          <div class="acc-card-details"><span class="acc-card-type">Bybit</span></div>
+        </div>
+        <div class="payment-method-option acc-select-card" data-method="OKX" data-logo="okx.png">
+          <div class="acc-card-icon" style="background: var(--bg-hover); color: #0091ff; overflow: hidden;"><img src="okx.png" alt="OKX" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"></div>
+          <div class="acc-card-details"><span class="acc-card-type">OKX</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- USDT Deposit Panel -->
+    <div id="usdtDepositPanel" class="right-drawer-panel hidden usdt-deposit-panel" style="z-index: 135;">
+      <div class="drawer-top-header" style="margin-bottom: 12px;">
+        <h3 style="font-size: 16px;"><i class="fa-solid fa-chevron-left" id="backFromUsdtDeposit" style="cursor: pointer; font-size: 14px; margin-right: 4px;"></i> Payment method</h3>
+      </div>
+      <div class="usdt-deposit-header">
+        <div class="usdt-icon"><img src="trn.jpeg" alt="USDT" style="width:100%; height:100%; object-fit:cover; border-radius:50%;"></div>
+        <div>
+          <div class="usdt-title">USDT - TRC20</div>
+          <div class="usdt-sub">Tether (TRC20)</div>
+        </div>
+      </div>
+      <div class="usdt-wallet-box">
+        <div class="label">USDT DEPOSIT WALLET</div>
+        <div class="label" style="font-size: 11px; color: var(--warning); margin-top: 2px;">Send exactly <span id="usdtAmountDisplay">$50.00</span></div>
+        <div style="font-size: 11px; color: var(--text-secondary); margin: 6px 0 10px 0;">Send the exact amount to the wallet below. Your deposit will be credited after manual administrator approval.</div>
+        <div class="label">WALLET ADDRESS</div>
+        <div class="address-row">
+          <span class="address" id="usdtWalletAddress">TYP4ap9SbPZdZTwKbNA9euBsrgPC7ugdDK</span>
+          <button class="copy-btn" id="copyWalletAddress"><i class="fa-regular fa-copy"></i> Copy</button>
+        </div>
+      </div>
+      <div class="deposit-sub-title">Deposit amount</div>
+      <div class="usdt-amount-input">
+        <span>USDT</span>
+        <input type="number" id="usdtAmountInput" placeholder="Enter amount" min="5" step="1" value="50" />
+      </div>
+      <div class="deposit-sub-title">USDT transaction hash</div>
+      <div class="usdt-hash-input">
+        <input type="text" id="usdtHashInput" placeholder="Enter transaction hash (optional)" />
+      </div>
+      <div class="deposit-sub-title">Optional note for administrator</div>
+      <div class="usdt-note-input">
+        <input type="text" id="usdtNoteInput" placeholder="Add a note (optional)" />
+      </div>
+      <button class="btn-deposit-submit" id="submitUsdtDeposit">Submit for approval</button>
+    </div>
+
+    <!-- Identity Verification Panel -->
+    <div id="identityVerificationPanel" class="right-drawer-panel hidden" style="z-index: 130; overflow-y: auto;">
+      <div class="drawer-top-header" style="margin-bottom: 12px;">
+        <h3 style="font-size: 16px;"><i class="fa-solid fa-chevron-left" id="backFromIdentityVerification" style="cursor: pointer; font-size: 14px; margin-right: 4px;"></i> Identity verification</h3>
+      </div>
+      <div style="margin-bottom: 16px;">
+        <div style="font-size: 18px; font-weight: 700; color: var(--text-white);">IDENTITY VERIFICATION</div>
+        <div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">Complete your verification</div>
+        <div style="display: flex; align-items: center; gap: 8px; margin-top: 6px;">
+          <span style="font-size: 12px; color: var(--btn-danger);">●</span>
+          <span style="font-size: 13px; color: var(--text-secondary);" id="verificationStatusText">Not verified</span>
+        </div>
+        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 12px; line-height: 1.5;">Choose the country that issued your document, select the document type, then upload readable identity documents for administrator approval.</div>
+      </div>
+      <div style="margin-bottom: 12px;">
+        <div style="font-size: 13px; font-weight: 600; color: var(--text-white); margin-bottom: 6px;">Issuing country</div>
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border-light); border-radius: 12px; padding: 12px 14px; cursor: pointer; display: flex; align-items: center; justify-content: space-between;" id="countrySelectTrigger"><span id="selectedCountryDisplay" style="color: var(--text-secondary);">Select country</span><i class="fa-solid fa-chevron-down" style="color: var(--text-secondary); font-size: 12px;"></i></div>
+      </div>
+      <div style="margin-bottom: 12px;">
+        <div style="font-size: 13px; font-weight: 600; color: var(--text-white); margin-bottom: 6px;">Location type</div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button class="doc-type-btn active" data-type="National ID" style="flex:1; min-width:80px; background-color: var(--bg-active); border: 2px solid var(--btn-primary); border-radius: 12px; padding: 10px 12px; color: var(--text-white); font-size: 12px; font-weight: 600; cursor: pointer;">National ID</button>
+          <button class="doc-type-btn" data-type="Driving licence" style="flex:1; min-width:80px; background-color: var(--bg-card); border: 1px solid var(--border-light); border-radius: 12px; padding: 10px 12px; color: var(--text-secondary); font-size: 12px; font-weight: 600; cursor: pointer;">Driving licence</button>
+          <button class="doc-type-btn" data-type="Passport" style="flex:1; min-width:80px; background-color: var(--bg-card); border: 1px solid var(--border-light); border-radius: 12px; padding: 10px 12px; color: var(--text-secondary); font-size: 12px; font-weight: 600; cursor: pointer;">Passport</button>
+        </div>
+      </div>
+      <div style="margin-bottom: 12px;">
+        <div style="font-size: 13px; font-weight: 600; color: var(--text-white); margin-bottom: 6px;" id="frontDocLabel">Front of national ID</div>
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border-light); border-radius: 12px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: border-color 0.3s;" id="frontUploadTrigger">
+          <span style="color: var(--text-secondary); font-size: 12px;" id="frontUploadText">JPEG, PNG, WebP, or PDF</span>
+          <span style="color: var(--btn-primary); font-weight: 600; font-size: 13px;">Choose</span>
+        </div>
+        <input type="file" id="frontFileInput" accept=".jpg,.jpeg,.png,.webp,.pdf" style="display:none;">
+        <div id="frontFileStatus" class="file-upload-status"></div>
+      </div>
+      <div style="margin-bottom: 12px;" id="backUploadContainer">
+        <div style="font-size: 13px; font-weight: 600; color: var(--text-white); margin-bottom: 6px;" id="backDocLabel">Back of national ID</div>
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border-light); border-radius: 12px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: border-color 0.3s;" id="backUploadTrigger">
+          <span style="color: var(--text-secondary); font-size: 12px;" id="backUploadText">JPEG, PNG, WebP, or PDF</span>
+          <span style="color: var(--btn-primary); font-weight: 600; font-size: 13px;">Choose</span>
+        </div>
+        <input type="file" id="backFileInput" accept=".jpg,.jpeg,.png,.webp,.pdf" style="display:none;">
+        <div id="backFileStatus" class="file-upload-status"></div>
+      </div>
+      <button class="btn-deposit-submit" id="submitVerificationBtn" style="margin-top: 4px;">Submit for review</button>
+      <div style="font-size: 11px; color: var(--text-secondary); text-align: center; margin-top: 12px; line-height: 1.5;">Only JPEG, PNG, WebP, or PDF files under 5 MB are accepted.<br>Administrators review each submission.</div>
+    </div>
+
+    <!-- Proof of Address Panel -->
+    <div id="proofOfAddressPanel" class="right-drawer-panel hidden" style="z-index: 135; overflow-y: auto;">
+      <div class="drawer-top-header" style="margin-bottom: 12px;">
+        <h3 style="font-size: 16px;"><i class="fa-solid fa-chevron-left" id="backFromProofOfAddress" style="cursor: pointer; font-size: 14px; margin-right: 4px;"></i> Proof of address</h3>
+      </div>
+      <div style="margin-bottom: 16px;">
+        <div style="font-size: 18px; font-weight: 700; color: var(--text-white);">PROOF OF ADDRESS</div>
+        <div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">Complete your verification</div>
+        <div style="display: flex; align-items: center; gap: 8px; margin-top: 6px;"><span style="font-size: 12px; color: var(--warning);">●</span><span style="font-size: 13px; color: var(--text-secondary);" id="addressVerificationStatusText">Pending</span></div>
+        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 12px; line-height: 1.5;">Upload a recent document that confirms your current residential address.<br><span style="color: var(--text-secondary); font-size: 11px;">Accepted documents: Bank statement or Utility bill (Electricity, Water, Gas, or Internet)</span></div>
+      </div>
+      <div style="margin-bottom: 12px;">
+        <div style="font-size: 13px; font-weight: 600; color: var(--text-white); margin-bottom: 6px;">Document type</div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button class="address-doc-btn active" data-type="Bank statement" style="flex:1; min-width:80px; background-color: var(--bg-active); border: 2px solid var(--btn-primary); border-radius: 12px; padding: 10px 12px; color: var(--text-white); font-size: 12px; font-weight: 600; cursor: pointer;"><i class="fa-solid fa-building-columns" style="margin-right: 6px;"></i> Bank statement</button>
+          <button class="address-doc-btn" data-type="Utility bill" style="flex:1; min-width:80px; background-color: var(--bg-card); border: 1px solid var(--border-light); border-radius: 12px; padding: 10px 12px; color: var(--text-secondary); font-size: 12px; font-weight: 600; cursor: pointer;"><i class="fa-solid fa-bolt" style="margin-right: 6px;"></i> Utility bill</button>
+        </div>
+      </div>
+      <div style="margin-bottom: 12px;">
+        <div style="font-size: 13px; font-weight: 600; color: var(--text-white); margin-bottom: 6px;" id="addressDocLabel">Upload bank statement</div>
+        <div style="background-color: var(--bg-card); border: 2px dashed var(--border-light); border-radius: 12px; padding: 24px 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s;" id="addressUploadTrigger">
+          <i class="fa-solid fa-cloud-arrow-up" style="font-size: 32px; color: var(--btn-primary); margin-bottom: 8px;"></i>
+          <span style="color: var(--text-secondary); font-size: 12px;" id="addressUploadText">JPEG, PNG, WebP, or PDF</span>
+          <span style="color: var(--text-secondary); font-size: 11px; margin-top: 4px;">Max file size: 5 MB</span>
+        </div>
+        <input type="file" id="addressFileInput" accept=".jpg,.jpeg,.png,.webp,.pdf" style="display:none;">
+        <div id="addressFileStatus" class="file-upload-status"></div>
+      </div>
+      <button class="btn-deposit-submit" id="submitAddressBtn" style="margin-top: 4px;">Submit for review</button>
+      <div style="font-size: 11px; color: var(--text-secondary); text-align: center; margin-top: 12px; line-height: 1.5;">Document must be issued within the last 6 months.<br>Administrators review each submission.</div>
+    </div>
+
+    <!-- Transfer Panel -->
+    <div id="transferPanel" class="right-drawer-panel hidden" style="z-index: 130; overflow-y: auto;">
+      <div class="drawer-top-header" style="margin-bottom: 12px;">
+        <h3 style="font-size: 16px;"><i class="fa-solid fa-chevron-left" id="backFromTransfer" style="cursor: pointer; font-size: 14px; margin-right: 4px;"></i> Transfer</h3>
+      </div>
+      <div style="margin-bottom: 16px;">
+        <div style="font-size: 14px; font-weight: 600; color: var(--text-white);">Transfer between accounts</div>
+        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">Move funds between your real USD accounts or send to another user</div>
+      </div>
+      <div style="margin-bottom: 12px;">
+        <div style="font-size: 13px; font-weight: 600; color: var(--text-white); margin-bottom: 6px;">From</div>
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border-light); border-radius: 12px; padding: 12px 14px; cursor: pointer; display: flex; align-items: center; justify-content: space-between;" id="fromAccountTrigger">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 28px; height: 28px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: var(--bg-hover);"><img src="logo.png" alt="USD" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"></div>
+            <div>
+              <div style="font-size: 13px; font-weight: 600; color: var(--text-white);" id="fromAccountName">USD Account</div>
+              <div style="font-size: 11px; color: var(--text-secondary);" id="fromAccountBalance">USD 0.00</div>
+            </div>
+          </div>
+          <i class="fa-solid fa-chevron-down" style="color: var(--text-secondary); font-size: 12px;"></i>
+        </div>
+      </div>
+      <div style="text-align: center; margin: 2px 0 10px 0;"><button id="swapAccountsBtn" style="background: var(--bg-hover); border: 1px solid var(--border-light); border-radius: 50%; width: 36px; height: 36px; color: var(--btn-primary); cursor: pointer;"><i class="fa-solid fa-arrow-down-up"></i></button></div>
+      <div style="margin-bottom: 12px;">
+        <div style="font-size: 13px; font-weight: 600; color: var(--text-white); margin-bottom: 6px;">To</div>
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border-light); border-radius: 12px; padding: 12px 14px; cursor: pointer; display: flex; align-items: center; justify-content: space-between;" id="toAccountTrigger">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 28px; height: 28px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: var(--bg-hover);"><img src="trn.jpeg" alt="USDT" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"></div>
+            <div>
+              <div style="font-size: 13px; font-weight: 600; color: var(--text-white);" id="toAccountName">USDT Account</div>
+              <div style="font-size: 11px; color: var(--text-secondary);" id="toAccountBalance">USDT 0.00</div>
+            </div>
+          </div>
+          <i class="fa-solid fa-chevron-down" style="color: var(--text-secondary); font-size: 12px;"></i>
+        </div>
+      </div>
+
+      <!-- ANOTHER USER INPUT SECTION (hidden by default) -->
+      <div id="anotherUserSection" style="display: none; margin-bottom: 12px;">
+        <div style="font-size: 13px; font-weight: 600; color: var(--text-white); margin-bottom: 6px;">User Account ID</div>
+        <div style="background-color: var(--bg-card); border: 2px solid var(--btn-primary); border-radius: 12px; padding: 12px 14px; display: flex; align-items: center;">
+          <input type="text" id="recipientAccountIdInput" placeholder="Enter recipient's Account ID" style="background: transparent; border: none; font-size: 14px; color: var(--text-white); width: 100%; outline: none; font-family: monospace;">
+        </div>
+        <div style="font-size: 11px; color: var(--text-secondary); margin-top: 6px;">Enter the 12-digit ID of the user you want to send to.</div>
+      </div>
+      <!-- ANOTHER USER INPUT SECTION END -->
+
+      <div style="margin-bottom: 12px;">
+        <div style="font-size: 13px; font-weight: 600; color: var(--text-white); margin-bottom: 6px;">Amount</div>
+        <div style="background-color: var(--bg-card); border: 2px solid var(--btn-primary); border-radius: 12px; padding: 12px 14px; display: flex; align-items: center;"><span style="font-size: 16px; font-weight: 700; color: var(--text-white); margin-right: 8px;" id="transferCurrencySymbol">$</span><input type="number" id="transferAmountInput" value="50" min="1" step="1" style="background: transparent; border: none; font-size: 16px; font-weight: 700; color: var(--text-white); width: 100%; outline: none;"></div>
+        <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
+          <button class="transfer-preset-btn" data-amount="10" style="background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 8px; padding: 6px 14px; color: var(--text-secondary); font-size: 12px; cursor: pointer;">$10</button>
+          <button class="transfer-preset-btn" data-amount="25" style="background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 8px; padding: 6px 14px; color: var(--text-secondary); font-size: 12px; cursor: pointer;">$25</button>
+          <button class="transfer-preset-btn" data-amount="50" style="background: var(--bg-active); border: 2px solid var(--btn-primary); border-radius: 8px; padding: 6px 14px; color: var(--text-white); font-size: 12px; cursor: pointer;">$50</button>
+          <button class="transfer-preset-btn" data-amount="100" style="background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 8px; padding: 6px 14px; color: var(--text-secondary); font-size: 12px; cursor: pointer;">$100</button>
+          <button class="transfer-preset-btn" data-amount="250" style="background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 8px; padding: 6px 14px; color: var(--text-secondary); font-size: 12px; cursor: pointer;">$250</button>
+          <button class="transfer-preset-btn" data-amount="500" style="background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 8px; padding: 6px 14px; color: var(--text-secondary); font-size: 12px; cursor: pointer;">$500</button>
+        </div>
+      </div>
+      <button class="btn-deposit-submit" id="submitTransferBtn">Transfer</button>
+      <div style="font-size: 11px; color: var(--text-secondary); text-align: center; margin-top: 12px; line-height: 1.5;">Transfers between accounts are instant.<br>Minimum transfer amount: $1</div>
+    </div>
+
+    <!-- Transactions Panel -->
+    <div id="transactionsPanel" class="right-drawer-panel hidden" style="z-index: 130;">
+      <div class="drawer-top-header" style="margin-bottom: 12px;">
+        <h3 style="font-size: 16px;"><i class="fa-solid fa-chevron-left" id="backFromTransactions" style="cursor: pointer; font-size: 14px; margin-right: 4px;"></i> Transactions</h3>
+      </div>
+      <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+        <button class="deals-tab active" id="tabAllTransactions" style="flex:1; padding: 8px 0; background: none; border: none; color: var(--text-white); font-size: 13px; font-weight: 600; cursor: pointer; border-bottom: 2px solid var(--btn-primary);">All</button>
+        <button class="deals-tab" id="tabDeposits" style="flex:1; padding: 8px 0; background: none; border: none; color: var(--text-secondary); font-size: 13px; font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent;">Deposits</button>
+        <button class="deals-tab" id="tabWithdrawals" style="flex:1; padding: 8px 0; background: none; border: none; color: var(--text-secondary); font-size: 13px; font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent;">Withdrawals</button>
+      </div>
+      <div id="transactionsList" style="display: flex; flex-direction: column; gap: 10px;">
+        <div class="deals-empty-state"><i class="fa-solid fa-list-ul"></i><p>No transactions yet</p></div>
+      </div>
+    </div>
+
+    <!-- Referral Panel -->
+    <div id="referralPanel" class="right-drawer-panel hidden" style="z-index: 130;">
+      <div class="drawer-top-header" style="margin-bottom: 12px;">
+        <h3 style="font-size: 16px;"><i class="fa-solid fa-chevron-left" id="backFromReferral" style="cursor: pointer; font-size: 14px; margin-right: 4px;"></i> Referral program</h3>
+      </div>
+      <div style="background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 16px; padding: 16px; text-align: center; margin-bottom: 16px;">
+        <div style="font-size: 36px; color: var(--warning); margin-bottom: 8px;"><i class="fa-solid fa-gift"></i></div>
+        <div style="font-size: 18px; font-weight: 700; color: var(--text-white); margin-bottom: 4px;">Invite friends, earn rewards</div>
+        <div style="font-size: 12px; color: var(--text-secondary);">Share your referral link and earn 10% of your friend's first deposit</div>
+      </div>
+      <div style="background-color: var(--bg-card); border: 1px solid var(--border-light); border-radius: 12px; padding: 12px 16px; margin-bottom: 12px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div style="font-size: 11px; color: var(--text-secondary);">Your referral link</div>
+            <div style="font-size: 13px; color: var(--btn-primary); font-weight: 600;" id="referralLink">https://goldlinemarkets.com/register?ref=ABCD1234</div>
+          </div>
+          <button style="background: var(--btn-primary); border: none; color: #ffffff; padding: 6px 16px; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: 600;" id="copyReferralLink">Copy</button>
+        </div>
+      </div>
+      <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+        <div style="flex: 1; background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 12px; padding: 12px; text-align: center;">
+          <div style="font-size: 11px; color: var(--text-secondary);">Total referrals</div>
+          <div style="font-size: 20px; font-weight: 700; color: var(--text-white);" id="totalReferralsCount">0</div>
+        </div>
+        <div style="flex: 1; background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 12px; padding: 12px; text-align: center;">
+          <div style="font-size: 11px; color: var(--text-secondary);">Earnings</div>
+          <div style="font-size: 20px; font-weight: 700; color: var(--success);">$0.00</div>
+        </div>
+      </div>
+      <div style="font-size: 12px; color: var(--text-secondary); text-align: center; padding: 8px;"><i class="fa-solid fa-info-circle"></i> You earn 10% of your friend's first deposit</div>
+    </div>
+
+    <!-- Trade History Panel -->
+    <div id="tradeHistoryPanel" class="right-drawer-panel hidden" style="z-index: 130;">
+      <div class="drawer-top-header" style="margin-bottom: 12px;">
+        <h3 style="font-size: 16px;"><i class="fa-solid fa-chevron-left" id="backFromTradeHistory" style="cursor: pointer; font-size: 14px; margin-right: 4px;"></i> Trade history</h3>
+      </div>
+      <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+        <button class="deals-tab active" id="tabAllTrades" style="flex:1; padding: 8px 0; background: none; border: none; color: var(--text-white); font-size: 13px; font-weight: 600; cursor: pointer; border-bottom: 2px solid var(--btn-primary);">All</button>
+        <button class="deals-tab" id="tabWins" style="flex:1; padding: 8px 0; background: none; border: none; color: var(--text-secondary); font-size: 13px; font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent;">Profits</button>
+        <button class="deals-tab" id="tabLosses" style="flex:1; padding: 8px 0; background: none; border: none; color: var(--text-secondary); font-size: 13px; font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent;">Losses</button>
+      </div>
+      <div id="tradeHistoryList" style="display: flex; flex-direction: column; gap: 10px;">
+        <div class="deals-empty-state"><i class="fa-solid fa-clock-rotate-left"></i><p>No trade history available</p></div>
+      </div>
+    </div>
+
+    <!-- Copy Trading Panel -->
+    <div id="copyTradingPanel" class="right-drawer-panel hidden" style="z-index: 130;">
+      <div class="drawer-top-header" style="margin-bottom: 12px;">
+        <h3 style="font-size: 16px;"><i class="fa-solid fa-chevron-left" id="backFromCopyTrading" style="cursor: pointer; font-size: 14px; margin-right: 4px;"></i> Copy Trading</h3>
+      </div>
+      <div class="copy-trading-id-box">
+        <div class="id-label">Your Copy Trading ID</div>
+        <div class="id-value" id="copyTradingId">Loading...</div>
+        <div class="id-status" id="copyTradingStatus">Active</div>
+        <button class="copy-btn" id="copyTradingIdBtn"><i class="fa-regular fa-copy"></i> Copy ID</button>
+      </div>
+      <div style="margin-bottom: 16px;">
+        <div style="font-size: 14px; font-weight: 600; color: var(--text-white); margin-bottom: 8px;">How Copy Trading Works</div>
+        <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.6;">
+          <p style="margin-bottom: 8px;">Share your unique Copy Trading ID with other traders. When they enter your ID, they can copy your trades automatically.</p>
+          <p style="color: var(--btn-primary); font-weight: 600;">You earn 5% of profits from traders who copy you!</p>
+        </div>
+      </div>
+      <div style="background-color: var(--bg-card); border: 1px solid var(--border-light); border-radius: 12px; padding: 14px;">
+        <div style="font-size: 13px; font-weight: 600; color: var(--text-white); margin-bottom: 8px;">Your Copy Trading Stats</div>
+        <div style="display: flex; gap: 12px;">
+          <div style="flex: 1; text-align: center;">
+            <div style="font-size: 11px; color: var(--text-secondary);">Copiers</div>
+            <div style="font-size: 18px; font-weight: 700; color: var(--text-white);" id="copyTradingCopiers">0</div>
+          </div>
+          <div style="flex: 1; text-align: center;">
+            <div style="font-size: 11px; color: var(--text-secondary);">Total Volume</div>
+            <div style="font-size: 18px; font-weight: 700; color: var(--text-white);" id="copyTradingVolume">$0.00</div>
+          </div>
+          <div style="flex: 1; text-align: center;">
+            <div style="font-size: 11px; color: var(--text-secondary);">Earnings</div>
+            <div style="font-size: 18px; font-weight: 700; color: var(--success);" id="copyTradingEarnings">$0.00</div>
+          </div>
+        </div>
+      </div>
+      <div style="font-size: 11px; color: var(--text-secondary); text-align: center; margin-top: 16px; line-height: 1.5;">
+        Copy trading is currently in beta. Share your ID to get started.
+      </div>
+    </div>
+
+    <!-- Withdrawal Account Choice Panel -->
+    <div id="withdrawAccountChoicePanel" class="right-drawer-panel hidden" style="z-index: 150;">
+      <div class="drawer-top-header">
+        <h3><i class="fa-solid fa-chevron-left" id="backFromWithdrawAccountChoice" style="cursor: pointer; font-size: 16px; margin-right: 4px;"></i> Choose real account</h3>
+      </div>
+      <div class="acc-selection-list">
+        <div class="withdraw-acc-option" data-withdraw-account="real-usd" style="background-color: var(--bg-card); border: 2px solid var(--btn-primary); border-radius: 60px; padding: 12px 20px 12px 16px; display: flex; align-items: center; gap: 14px; cursor: pointer;">
+          <div style="width: 36px; height: 36px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: var(--bg-hover);">
+            <img src="logo.png" alt="USD" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 2px;">
+            <span style="font-size: 13px; font-weight: 600; color: var(--text-white);">USD Account</span>
+            <span style="font-size: 14px; font-weight: 700; color: var(--text-white);" id="withdrawUsdBalanceDisplay">USD 0.00</span>
+          </div>
+        </div>
+        <div class="withdraw-acc-option" data-withdraw-account="real-usdt" style="background-color: var(--bg-card); border: 1px solid var(--border-light); border-radius: 60px; padding: 12px 20px 12px 16px; display: flex; align-items: center; gap: 14px; cursor: pointer;">
+          <div style="width: 36px; height: 36px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: var(--bg-hover);">
+            <img src="trn.jpeg" alt="USDT" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 2px;">
+            <span style="font-size: 13px; font-weight: 600; color: var(--text-white);">USDT Account</span>
+            <span style="font-size: 14px; font-weight: 700; color: var(--text-white);" id="withdrawUsdtBalanceDisplay">USDT 0.00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Withdrawal Panel -->
+    <div id="withdrawalPanel" class="right-drawer-panel hidden" style="z-index: 140;">
+      <div class="drawer-top-header" style="margin-bottom:12px;">
+        <h3 style="font-size:16px;">
+          <i class="fa-solid fa-chevron-left" id="backFromWithdrawal" style="cursor:pointer;font-size:14px;margin-right:4px;"></i>
+          Withdraw
+        </h3>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <div style="font-size:14px;font-weight:600;color:var(--text-white);margin-bottom:4px;">Withdraw funds</div>
+        <div style="font-size:12px;color:var(--text-secondary);" id="withdrawalMinInfo">Minimum withdrawal: $50</div>
+      </div>
+
+      <div class="deposit-sub-title">Account</div>
+      <div class="deposit-field-group" id="withdrawAccountSelectorTrigger" style="margin-bottom:14px; cursor:pointer;">
+        <div class="deposit-row-content">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 28px; height: 28px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: var(--bg-hover);">
+              <img src="logo.png" alt="USD Account" id="withdrawAccountSelectorIcon" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+            </div>
+            <div>
+              <div class="deposit-item-title" id="withdrawSelectedAccountName">USD Account</div>
+              <div class="deposit-item-sub" id="withdrawSelectedAccountBalance">USD 0.00</div>
+            </div>
+          </div>
+          <i class="fa-solid fa-chevron-right" style="color: var(--text-secondary); font-size: 12px;"></i>
+        </div>
+      </div>
+
+      <div class="deposit-sub-title">Payment method</div>
+      <div style="background-color:var(--bg-card); border:1px solid var(--border-light); border-radius:12px; padding:10px 14px; margin-bottom:16px; cursor:pointer;" id="withdrawPaymentMethodTrigger">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div style="width:32px; height:32px; border-radius:50%; overflow:hidden; display:flex; align-items:center; justify-content:center; background:var(--bg-hover);">
+              <img src="mpesa.png" alt="M-PESA" id="withdrawMethodIcon" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+            </div>
+            <div>
+              <div style="font-size:14px; font-weight:600; color:var(--text-white);" id="withdrawMethodName">M-PESA</div>
+            </div>
+          </div>
+          <i class="fa-solid fa-chevron-right" style="color:var(--text-secondary); font-size:12px;"></i>
+        </div>
+      </div>
+
+      <div id="withdrawDetailsContainer">
+        <div class="deposit-sub-title">M-PESA phone number</div>
+        <div class="mpesa-phone-input" style="margin-bottom:16px;">
+          <span class="prefix">+254</span>
+          <input type="text" id="withdrawPhoneInput" placeholder="700 000 000" maxlength="9" autocomplete="off" style="background:transparent;border:none;font-size:16px;font-weight:600;color:var(--text-white);width:100%;outline:none;letter-spacing:1px;font-family:monospace;">
+        </div>
+      </div>
+
+      <div class="deposit-sub-title">Amount (USD)</div>
+      <div style="background:var(--bg-card);border:2px solid var(--btn-primary);border-radius:12px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;">
+        <span style="font-size:18px;font-weight:700;color:var(--text-white);margin-right:8px;" id="withdrawCurrencySymbol">$</span>
+        <input type="number" id="withdrawAmountInput" value="50" min="50" step="1" style="background:transparent;border:none;font-size:18px;font-weight:700;color:var(--text-white);width:100%;outline:none;">
+      </div>
+
+      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+        <button class="withdraw-preset-btn" data-amount="50" style="background:var(--bg-active);border:2px solid var(--btn-primary);border-radius:8px;padding:6px 14px;color:var(--text-white);font-size:12px;cursor:pointer;">$50</button>
+        <button class="withdraw-preset-btn" data-amount="100" style="background:var(--bg-card);border:1px solid var(--border-light);border-radius:8px;padding:6px 14px;color:var(--text-secondary);font-size:12px;cursor:pointer;">$100</button>
+        <button class="withdraw-preset-btn" data-amount="200" style="background:var(--bg-card);border:1px solid var(--border-light);border-radius:8px;padding:6px 14px;color:var(--text-secondary);font-size:12px;cursor:pointer;">$200</button>
+        <button class="withdraw-preset-btn" data-amount="500" style="background:var(--bg-card);border:1px solid var(--border-light);border-radius:8px;padding:6px 14px;color:var(--text-secondary);font-size:12px;cursor:pointer;">$500</button>
+        <button class="withdraw-preset-btn" data-amount="1000" style="background:var(--bg-card);border:1px solid var(--border-light);border-radius:8px;padding:6px 14px;color:var(--text-secondary);font-size:12px;cursor:pointer;">$1000</button>
+      </div>
+
+      <button class="btn-deposit-submit" id="submitWithdrawBtn" style="margin-top:4px;">Submit withdrawal</button>
+      <div style="font-size:11px;color:var(--text-secondary);text-align:center;margin-top:12px;line-height:1.5;">Withdrawals are processed within 24 hours.<br><span id="withdrawalMinFooter">Minimum withdrawal: $50</span></div>
+    </div>
+
+    <!-- Withdraw Payment Method Panel -->
+    <div id="withdrawPaymentMethodPanel" class="right-drawer-panel hidden" style="z-index: 150;">
+      <div class="drawer-top-header" style="margin-bottom:12px;">
+        <h3 style="font-size:16px;">
+          <i class="fa-solid fa-chevron-left" id="backFromWithdrawPaymentMethod" style="cursor:pointer;font-size:14px;margin-right:4px;"></i>
+          Payment method
+        </h3>
+      </div>
+      <div style="font-size:11px;font-weight:700;color:var(--text-secondary);margin-bottom:12px;letter-spacing:0.5px;">SELECT WITHDRAWAL METHOD</div>
+      <div class="acc-selection-list">
+        <div class="withdraw-method-option acc-select-card active" data-method="Mpesa" data-logo="mpesa.png">
+          <div class="acc-card-icon" style="background:var(--bg-hover); overflow:hidden;">
+            <img src="mpesa.png" alt="Mpesa" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+          </div>
+          <div class="acc-card-details">
+            <span class="acc-card-type" style="color:var(--text-white); font-weight:700;">M-PESA</span>
+            <span style="font-size:11px; color:var(--text-secondary);">Mobile money</span>
+          </div>
+        </div>
+        <div class="withdraw-method-option acc-select-card" data-method="Binance" data-logo="binance.png">
+          <div class="acc-card-icon" style="background:var(--bg-hover); overflow:hidden;">
+            <img src="binance.png" alt="Binance" style="width:100%;height:100%; object-fit:cover; border-radius:50%;">
+          </div>
+          <div class="acc-card-details">
+            <span class="acc-card-type">Binance</span>
+            <span style="font-size:11px; color:var(--text-secondary);">Cryptocurrency</span>
+          </div>
+        </div>
+        <div class="withdraw-method-option acc-select-card" data-method="Bybit" data-logo="bybit.png">
+          <div class="acc-card-icon" style="background:var(--bg-hover); overflow:hidden;">
+            <img src="bybit.png" alt="Bybit" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+          </div>
+          <div class="acc-card-details">
+            <span class="acc-card-type">Bybit</span>
+            <span style="font-size:11px; color:var(--text-secondary);">Cryptocurrency</span>
+          </div>
+        </div>
+        <div class="withdraw-method-option acc-select-card" data-method="OKX" data-logo="okx.png">
+          <div class="acc-card-icon" style="background:var(--bg-hover); overflow:hidden;">
+            <img src="okx.png" alt="OKX" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+          </div>
+          <div class="acc-card-details">
+            <span class="acc-card-type">OKX</span>
+            <span style="font-size:11px; color:var(--text-secondary);">Cryptocurrency</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ==================== JAVASCRIPT ==================== -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+    import { getDatabase, ref, get, child, set, update, push, onValue, off, runTransaction, remove } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCM0PfBaQf7-aujg1DX-9RqLzHXbf6dEzk",
+      authDomain: "rnx-traders.firebaseapp.com",
+      databaseURL: "https://rnx-traders-default-rtdb.firebaseio.com",
+      projectId: "rnx-traders",
+      storageBucket: "rnx-traders.firebasestorage.app",
+      messagingSenderId: "1061159616961",
+      appId: "1:1061159616961:web:8aca62689701251b86af40",
+      measurementId: "G-GHFTV2PMQ0"
+    };
+
+    const USD_TO_KES = 135;
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    // ... (rest of the file is unchanged from the provided dashboard.html)

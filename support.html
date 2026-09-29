@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TradeMatrix · Customer Service</title>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 420px;
+            height: 100vh;
+            height: 100dvh;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 16px;
+            background-color: #ffffff;
+            border-bottom: 1px solid #f0f0f0;
+            flex-shrink: 0;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Back icon removed */
+        .back-icon {
+            display: none;
+        }
+
+        .header-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #1cabe2;
+            flex-shrink: 0;
+        }
+
+        .header-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        .header-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-name-row {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .header-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: #050505;
+        }
+
+        .verified-badge-small {
+            color: #0866ff;
+            display: flex;
+            align-items: center;
+        }
+
+        .header-subtitle {
+            font-size: 11px;
+            color: #65676b;
+        }
+
+        /* Info icon removed */
+        .info-icon-btn {
+            display: none;
+        }
+
+        .chat-body {
+            flex: 1;
+            padding: 10px 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .profile-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 14px;
+            width: 100%;
+            flex-shrink: 0;
+        }
+
+        .profile-avatar-large {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #1cabe2;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+
+        .profile-avatar-large img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        .profile-name-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            margin-bottom: 2px;
+        }
+
+        .profile-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #050505;
+        }
+
+        .verified-badge-fb {
+            color: #0866ff;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-row-sent {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            width: 100%;
+            margin-bottom: 6px;
+        }
+
+        .message-row-received {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            width: 100%;
+            margin-bottom: 6px;
+        }
+
+        .message-wrapper {
+            display: flex;
+            flex-direction: column;
+            max-width: 70%;
+        }
+
+        .message-wrapper-sent {
+            align-items: flex-end;
+        }
+
+        .message-wrapper-received {
+            align-items: flex-start;
+        }
+
+        .message-bubble-sent {
+            background-color: #0084ff;
+            color: #ffffff;
+            padding: 8px 14px;
+            border-radius: 18px;
+            font-size: 15px;
+            word-break: break-word;
+            width: 100%;
+        }
+
+        .message-bubble-received {
+            background-color: #e4e6eb;
+            color: #050505;
+            padding: 8px 14px;
+            border-radius: 18px;
+            font-size: 15px;
+            word-break: break-word;
+            width: 100%;
+        }
+
+        .message-footer {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 2px;
+            margin-right: 4px;
+            min-height: 16px;
+        }
+
+        .message-footer-sent {
+            justify-content: flex-end;
+        }
+
+        .message-footer-received {
+            justify-content: flex-start;
+        }
+
+        .message-time {
+            font-size: 10px;
+            color: #65676b;
+        }
+
+        .delivered-tick {
+            display: inline-flex;
+            align-items: center;
+            color: #0084ff;
+            margin-left: 2px;
+        }
+
+        .delivered-tick svg {
+            width: 14px;
+            height: 14px;
+            fill: currentColor;
+        }
+
+        .like-bubble {
+            background-color: transparent;
+            color: #050505;
+            padding: 4px 0;
+            font-size: 28px;
+            line-height: 1.4;
+            width: 100%;
+            text-align: center;
+        }
+
+        .chat-footer {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            background-color: #ffffff;
+            border-top: 1px solid #f0f0f0;
+            flex-shrink: 0;
+        }
+
+        .footer-icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #0084ff;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            padding: 2px;
+            transition: transform 0.1s ease;
+        }
+
+        .footer-icon-btn:active {
+            transform: scale(0.9);
+        }
+
+        .input-wrapper {
+            flex: 1;
+            background-color: #f0f2f5;
+            border-radius: 20px;
+            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chat-text-input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 15px;
+            color: #050505;
+        }
+
+        .chat-text-input::placeholder {
+            color: #65676b;
+        }
+
+        .input-avatar-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .input-avatar-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .home-indicator {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding: 4px 0 2px 0;
+            background-color: #ffffff;
+            flex-shrink: 0;
+        }
+
+        .indicator-bar {
+            width: 134px;
+            height: 4px;
+            background-color: #050505;
+            border-radius: 100px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="chat-container">
+        
+        <div class="chat-header">
+            <div class="header-left">
+                <!-- Back icon removed -->
+                <div class="header-profile">
+                    <div class="header-avatar">
+                        <img src="image.png" alt="">
+                    </div>
+                    <div class="header-info">
+                        <div class="header-name-row">
+                            <span class="header-name">TradeMatrix Customer Service</span>
+                            <span class="verified-badge-small">
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="#0866ff">
+                                    <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-1.9 14.7l-3.8-3.8 1.4-1.4 2.4 2.4 5.6-5.6 1.4 1.4-7 7z"/>
+                                </svg>
+                            </span>
+                        </div>
+                        <span class="header-subtitle">Business chat</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Info icon removed -->
+        </div>
+
+        <div class="chat-body" id="chatBody">
+            <div class="profile-section">
+                <div class="profile-avatar-large">
+                    <img src="image.png" alt="">
+                </div>
+
+                <div class="profile-name-row">
+                    <span class="profile-name">TradeMatrix Customer Service</span>
+                    <span class="verified-badge-fb">
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="#0866ff">
+                            <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-1.9 14.7l-3.8-3.8 1.4-1.4 2.4 2.4 5.6-5.6 1.4 1.4-7 7z"/>
+                        </svg>
+                    </span>
+                </div>
+            </div>
+
+            <div id="messageThread" style="width: 100%; display: flex; flex-direction: column;">
+            </div>
+        </div>
+
+        <div>
+            <div class="chat-footer">
+                <div class="input-wrapper">
+                    <input type="text" id="msgInput" class="chat-text-input" placeholder="Message..." value="Hi, How can we help you?">
+                    <div class="input-avatar-thumb">
+                        <img src="image.png" alt="">
+                    </div>
+                </div>
+
+                <button id="actionBtn" class="footer-icon-btn">
+                    <svg id="thumbsUpSvg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                        <path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/>
+                    </svg>
+                    <svg id="sendSvg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" style="display: none;">
+                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="home-indicator">
+                <div class="indicator-bar"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ========== FIREBASE CONFIG (unchanged) ==========
+        const firebaseConfig = {
+            apiKey: "AIzaSyB411BhnMe-xN4rm6HHPkxLnBQM1hfAJ5E",
+            authDomain: "alti-101.firebaseapp.com",
+            databaseURL: "https://alti-101-default-rtdb.firebaseio.com",
+            projectId: "alti-101",
+            storageBucket: "alti-101.firebasestorage.app",
+            messagingSenderId: "62369585945",
+            appId: "1:62369585945:web:2e289308cbc9fd31824388",
+            measurementId: "G-7WYPG3C39M"
+        };
+
+        // ========== FIREBASE PATH STRUCTURE (unchanged) ==========
+        const FB_PARENT = "received";
+        const FB_CONVERSATION_ID = "1970783136";  // Admin/Notification ID
+
+        let database;
+        let FB_USER_ID = null;
+
+        try {
+            firebase.initializeApp(firebaseConfig);
+            database = firebase.database();
+            console.log("Firebase initialized successfully!");
+        } catch (error) {
+            console.error("Firebase initialization error:", error);
+            alert("Firebase initialization failed. Please check console for details.");
+        }
+
+        // ========== GENERATE UNIQUE USER ID (unchanged) ==========
+        const USER_ID_KEY = 'chatUserId';
+        
+        async function getOrCreateUserId() {
+            const storedUserId = localStorage.getItem(USER_ID_KEY);
+            if (storedUserId) {
+                console.log(`Existing user: ${storedUserId}`);
+                return storedUserId;
+            }
+
+            if (!database) {
+                const newId = `User_${Date.now()}`;
+                localStorage.setItem(USER_ID_KEY, newId);
+                return newId;
+            }
+
+            try {
+                const snapshot = await database.ref(`${FB_PARENT}/${FB_CONVERSATION_ID}`).once('value');
+                const data = snapshot.val();
+                let maxUserNum = 0;
+
+                if (data) {
+                    const userKeys = Object.keys(data).filter(key => key.startsWith('User_'));
+                    userKeys.forEach(key => {
+                        const num = parseInt(key.replace('User_', ''));
+                        if (!isNaN(num) && num > maxUserNum) {
+                            maxUserNum = num;
+                        }
+                    });
+                }
+
+                const newUserNum = maxUserNum + 1;
+                const newUserId = `User_${newUserNum}`;
+                localStorage.setItem(USER_ID_KEY, newUserId);
+                console.log(`New user assigned: ${newUserId} (${newUserNum} total users)`);
+                return newUserId;
+            } catch (error) {
+                console.error("Error checking users:", error);
+                const newId = `User_${Date.now()}`;
+                localStorage.setItem(USER_ID_KEY, newId);
+                return newId;
+            }
+        }
+
+        // ========== LOCAL STORAGE FUNCTIONS (unchanged) ==========
+        const MESSAGES_STORAGE_KEY = 'chatMessages';
+
+        function saveMessagesToStorage(messages) {
+            try {
+                localStorage.setItem(MESSAGES_STORAGE_KEY, JSON.stringify(messages));
+                console.log(`${messages.length} messages saved to localStorage`);
+            } catch (error) {
+                console.error("Error saving messages to localStorage:", error);
+            }
+        }
+
+        function loadMessagesFromStorage() {
+            try {
+                const stored = localStorage.getItem(MESSAGES_STORAGE_KEY);
+                if (stored) {
+                    const messages = JSON.parse(stored);
+                    console.log(`${messages.length} messages loaded from localStorage`);
+                    return messages;
+                }
+            } catch (error) {
+                console.error("Error loading messages from localStorage:", error);
+            }
+            return [];
+        }
+
+        function addMessageToStorage(text, isLike = false, isReceived = false) {
+            const messages = loadMessagesFromStorage();
+            messages.push({
+                text: text,
+                time: getCurrentTime(),
+                type: isLike ? 'like' : 'text',
+                isReceived: isReceived,
+                timestamp: new Date().toISOString()
+            });
+            saveMessagesToStorage(messages);
+            return messages;
+        }
+
+        // ========== DOM REFS (unchanged) ==========
+        const msgInput = document.getElementById('msgInput');
+        const thumbsUpSvg = document.getElementById('thumbsUpSvg');
+        const sendSvg = document.getElementById('sendSvg');
+        const actionBtn = document.getElementById('actionBtn');
+        const messageThread = document.getElementById('messageThread');
+        const chatBody = document.getElementById('chatBody');
+
+        // ========== HELPERS (unchanged) ==========
+        function updateButtonState() {
+            const hasText = msgInput.value.trim().length > 0;
+            thumbsUpSvg.style.display = hasText ? 'none' : 'block';
+            sendSvg.style.display = hasText ? 'block' : 'none';
+        }
+
+        function createDeliveredTick() {
+            const tick = document.createElement('span');
+            tick.className = 'delivered-tick';
+            tick.innerHTML = `
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+            `;
+            return tick;
+        }
+
+        function getCurrentTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            return hours + ':' + minutes;
+        }
+
+        function appendMessageToUI(text, isLike = false, isReceived = false, time = null) {
+            const messageRow = document.createElement('div');
+            messageRow.className = isReceived ? 'message-row-received' : 'message-row-sent';
+
+            const messageWrapper = document.createElement('div');
+            messageWrapper.className = `message-wrapper ${isReceived ? 'message-wrapper-received' : 'message-wrapper-sent'}`;
+
+            let bubble;
+            if (isLike) {
+                bubble = document.createElement('div');
+                bubble.className = 'like-bubble';
+                bubble.textContent = '👍';
+            } else {
+                bubble = document.createElement('div');
+                bubble.className = isReceived ? 'message-bubble-received' : 'message-bubble-sent';
+                bubble.textContent = text;
+            }
+
+            const footer = document.createElement('div');
+            footer.className = `message-footer ${isReceived ? 'message-footer-received' : 'message-footer-sent'}`;
+
+            const timeSpan = document.createElement('span');
+            timeSpan.className = 'message-time';
+            timeSpan.textContent = time || getCurrentTime();
+            footer.appendChild(timeSpan);
+
+            if (!isReceived) {
+                const tick = createDeliveredTick();
+                footer.appendChild(tick);
+            }
+
+            messageWrapper.appendChild(bubble);
+            messageWrapper.appendChild(footer);
+            messageRow.appendChild(messageWrapper);
+            messageThread.appendChild(messageRow);
+
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        // ========== LOAD ALL MESSAGES FROM STORAGE (unchanged) ==========
+        function loadAllMessages() {
+            const messages = loadMessagesFromStorage();
+            if (messages.length === 0) {
+                console.log("No messages in localStorage");
+                return;
+            }
+            
+            messageThread.innerHTML = '';
+            messages.forEach(msg => {
+                const isLike = msg.type === 'like' || msg.text === '👍';
+                appendMessageToUI(msg.text, isLike, msg.isReceived || false, msg.time);
+            });
+            
+            console.log(`Loaded ${messages.length} messages into UI`);
+        }
+
+        // ========== CLEAR FIREBASE USER DATA (unchanged) ==========
+        async function clearFirebaseUserData() {
+            if (!database || !FB_USER_ID) {
+                console.warn("Firebase not ready or user not assigned");
+                return;
+            }
+
+            try {
+                const userRef = database.ref(`${FB_PARENT}/${FB_CONVERSATION_ID}/${FB_USER_ID}`);
+                await userRef.update({
+                    text: "",
+                    reply: ""
+                });
+                console.log(`Cleared text and reply for ${FB_USER_ID} in Firebase`);
+            } catch (error) {
+                console.error("Error clearing Firebase data:", error);
+            }
+        }
+
+        // ========== FIREBASE: SEND + LISTEN (unchanged) ==========
+        function listenForReply() {
+            if (!database || !FB_USER_ID) return;
+            const replyRef = database.ref(`${FB_PARENT}/${FB_CONVERSATION_ID}/${FB_USER_ID}/reply`);
+            replyRef.on('value', async (snapshot) => {
+                const replyText = snapshot.val();
+                if (replyText && replyText.trim() !== '') {
+                    console.log(`Reply from Firebase for ${FB_USER_ID}:`, replyText);
+                    
+                    addMessageToStorage(replyText, false, true);
+                    appendMessageToUI(replyText, false, true);
+                    
+                    await clearFirebaseUserData();
+                    console.log(`Cleared Firebase data for ${FB_USER_ID} after receiving reply`);
+                }
+            });
+        }
+
+        async function sendToFirebase(text, isLike = false) {
+            if (!database || !FB_USER_ID) {
+                console.warn("Firebase not ready or user not assigned");
+                return;
+            }
+            
+            const payload = {
+                text: text,
+                timestamp: new Date().toISOString(),
+                reply: ""
+            };
+            
+            const ref = database.ref(`${FB_PARENT}/${FB_CONVERSATION_ID}/${FB_USER_ID}`);
+            try {
+                await ref.set(payload);
+                console.log(`Firebase write OK at /${FB_PARENT}/${FB_CONVERSATION_ID}/${FB_USER_ID}`);
+            } catch (error) {
+                console.error("Firebase write error:", error);
+            }
+        }
+
+        // ========== SEND MESSAGE / LIKE (unchanged) ==========
+        async function sendMessage() {
+            const text = msgInput.value.trim();
+            if (text === '') return;
+
+            addMessageToStorage(text, false, false);
+            appendMessageToUI(text, false, false);
+            
+            msgInput.value = '';
+            updateButtonState();
+
+            await sendToFirebase(text, false);
+        }
+
+        async function sendLike() {
+            addMessageToStorage('👍', true, false);
+            appendMessageToUI('👍', true, false);
+            await sendToFirebase('👍', true);
+        }
+
+        // ========== CLEAR STORAGE (unchanged) ==========
+        function clearAllStorage() {
+            localStorage.removeItem(MESSAGES_STORAGE_KEY);
+            localStorage.removeItem(USER_ID_KEY);
+            messageThread.innerHTML = '';
+            console.log("All storage cleared. Reload to start fresh.");
+            location.reload();
+        }
+
+        // ========== INIT (unchanged) ==========
+        async function initChat() {
+            loadAllMessages();
+            
+            FB_USER_ID = await getOrCreateUserId();
+            
+            if (database && FB_USER_ID) {
+                listenForReply();
+            }
+
+            if (loadMessagesFromStorage().length === 0) {
+                msgInput.value = "Hi, How can we help you?";
+                updateButtonState();
+            } else {
+                msgInput.value = "";
+                updateButtonState();
+            }
+
+            console.log(`Chat ready. User: ${FB_USER_ID}`);
+            console.log(`Firebase path: /${FB_PARENT}/${FB_CONVERSATION_ID}/${FB_USER_ID}/`);
+            console.log(`Admin/Notification ID: ${FB_CONVERSATION_ID}`);
+            console.log("To change admin ID, edit FB_CONVERSATION_ID in the code.");
+        }
+
+        // ========== EVENTS (unchanged) ==========
+        msgInput.addEventListener('input', updateButtonState);
+
+        actionBtn.addEventListener('click', () => {
+            const hasText = msgInput.value.trim().length > 0;
+            if (hasText) {
+                sendMessage();
+            } else {
+                sendLike();
+            }
+        });
+
+        msgInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const hasText = msgInput.value.trim().length > 0;
+                if (hasText) {
+                    sendMessage();
+                }
+            }
+        });
+
+        // ========== EXPOSE CONSOLE HELPERS (unchanged) ==========
+        window.clearAllStorage = clearAllStorage;
+        window.viewMessages = function() {
+            const messages = loadMessagesFromStorage();
+            console.log("Messages in localStorage:", messages);
+            return messages;
+        };
+        window.getUserInfo = function() {
+            console.log(`User: ${FB_USER_ID}`);
+            console.log(`Admin/Notification ID: ${FB_CONVERSATION_ID}`);
+            console.log(`Path: /${FB_PARENT}/${FB_CONVERSATION_ID}/${FB_USER_ID}/`);
+            return { 
+                userId: FB_USER_ID, 
+                adminId: FB_CONVERSATION_ID,
+                path: `/${FB_PARENT}/${FB_CONVERSATION_ID}/${FB_USER_ID}/` 
+            };
+        };
+        window.clearFirebaseData = clearFirebaseUserData;
+
+        // ========== START ==========
+        initChat();
+
+        console.log("Chat app ready!");
+        console.log("Console helpers: clearAllStorage(), viewMessages(), getUserInfo(), clearFirebaseData()");
+    </script>
+
+</body>
+</html>
